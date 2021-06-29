@@ -297,30 +297,43 @@ Over 5 years, the probability of losing money = 10%
 Since $$\log(P_T/P_0) \approx N(\mu \times T, \sigma^2 \times T)$$
 
 We just want to calculate: $$\Pr(P_T < P_0) = \Pr(\log(P_{T}/P_0) < 0)$$
+
+#### Monthly prices
 ```{r}
 monthly_df <- monthly_df %>% 
-  mutate(yr5_log_mean = 60*mean_log_price_ratio, yr5_log_sd = 60*sd_log_price_ratio) %>% 
-  mutate(yr5_loss = pnorm(0, mean = 60*mean_log_price_ratio, sd = 60*sd_log_price_ratio),
-         yr10_loss = pnorm(0, mean = 120*mean_log_price_ratio, sd = 120*sd_log_price_ratio))
+  mutate(expected_value_yr5 = exp(mean_log_price_ratio*12*5),
+         probability_loss = pnorm(0, mean = mean_log_price_ratio, sd = sd_log_price_ratio))
 
-monthly_df %>% View
+monthly_df %>% 
+  ggplot(aes(x=probability_loss, y=expected_value_yr5, label=ID)) +
+  geom_label()
+
+monthly_df
 ```
+
+#### Daily prices
 ```{r}
 daily_df <- daily_df %>% 
-  mutate(yr5_log_mean = 365*5*mean_log_price_ratio, yr5_log_sd = 365*5*sd_log_price_ratio) %>% 
-  mutate(yr5_loss = pnorm(0, mean = 365*5*mean_log_price_ratio, sd = 365*5*sd_log_price_ratio),
-         yr10_loss = pnorm(0, mean = 365*10*mean_log_price_ratio, sd = 365*10*sd_log_price_ratio))
+  mutate(expected_value_yr5 = exp(mean_log_price_ratio*365*5),
+         probability_loss = pnorm(0, mean = mean_log_price_ratio, sd = sd_log_price_ratio))
 
-daily_df %>% View
+daily_df %>% 
+  ggplot(aes(x=probability_loss, y=expected_value_yr5, label=ID)) +
+  geom_label()
+
+daily_df
 ```
-```{r}
+
+
+
+## Appendix / Old
+
+```{r, include=FALSE}
 for (i in seq(5, 75, 5)) {
   print(i)
   print(pnorm(0, mean=i*monthly_df$mean_log_price_ratio[1], sd=i*monthly_df$sd_log_price_ratio[1]))
 }
 ```
-
-
 
 ### Determine the maximum level of risk
 
