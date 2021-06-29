@@ -1,0 +1,364 @@
+---
+title: "Portfolio analysis"
+author: "Jeremy Forbes"
+date: "21/06/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Useful packages
+
+```{r, echo=FALSE}
+library(tidyquant)
+library(tidyverse)
+library(lubridate)
+```
+
+## Load portfolio
+
+Currently I have:
+- NDQ.AX
+- A200.AX
+- ASIA.AX
+
+```{r}
+tickers = c('NDQ.AX', 'A200.AX', 'ASIA.AX')
+```
+
+Function to get daily prices
+
+```{r}
+get_prices <- function(ticker, from="1900-01-01", to=Sys.Date()) {
+  x <- getSymbols(ticker,
+                  src = 'yahoo',
+                  from="1900-01-01", 
+                  to=Sys.Date(),
+                  auto.assign = FALSE
+                  ) %>% as.data.frame()
+  colnames(x) <- c('Open', 'High', 'Low', 'Close', 'Volume', 'Adjusted')
+  # x$MidPrice <- (x$High + x$Low)/2
+  extract <- data.frame(ticker = ticker, date = rownames(x), price = x$Close) %>% 
+    fill(price, .direction = "up")
+  return(extract)
+}
+```
+
+Load all prices into a long dataframe
+
+```{r}
+remove(prices_df)
+for (ticker in tickers) {
+  prc = get_prices(ticker)
+  if (exists("prices_df")) {
+    prices_df = prices_df %>% 
+      bind_rows(prc)
+  } else {
+    prices_df = prc
+  }
+}
+
+prices_df <- prices_df %>% 
+  mutate(date = as.Date(date))
+
+prices_df %>% summary()
+```
+
+## Plot prices over time
+
+Divide prices by their price at start of 2019
+
+```{r}
+prices_df %>% 
+  left_join(
+    prices_df %>% 
+      filter(date == as.Date('2018-12-24')) %>% 
+      select(-date) %>% 
+      rename(price_2019 = price),
+    by = 'ticker'
+  ) %>%
+  mutate(baseline_price = price/price_2019) %>% 
+  group_by(ticker) %>%
+  mutate(adjusted_price = price/mean(price)) %>%
+  ggplot(aes(x=date, y=baseline_price, col=ticker, group=ticker)) +
+  geom_line()
+```
+## Plot returns over time
+
+Returns = (P(t+1) - P(t)) / P(t)
+
+```{r}
+# Daily
+daily_returns <- prices_df %>%
+  group_by(ticker) %>% 
+  arrange(date) %>% 
+  mutate(return = (price - lag(price, 1))/lag(price, 1),
+         log_return = log(price) -log(lag(price, 1)))
+
+# Weekly
+weekly_returns <- prices_df %>%
+  mutate(day_of_week = wday(date),
+         # week_of_year = week(date),
+         week_of_year = difftime(date, '2000-01-01', units = "weeks") %>% 
+           floor() %>% as.numeric()) %>% 
+  group_by(ticker, week_of_year) %>% 
+  filter(day_of_week == max(day_of_week)) %>% 
+  ungroup() %>% 
+  group_by(ticker) %>% 
+  arrange(date) %>% 
+  mutate(return = (price - lag(price, 1))/lag(price, 1),
+         log_return = log(price) -log(lag(price, 1)))
+
+# Monthly
+monthly_returns <- prices_df %>%
+  mutate(day_of_month = day(date),
+         month_of_year = month(date),
+         year = year(date)) %>% 
+  group_by(ticker, month_of_year, year) %>% 
+  filter(day_of_month == max(day_of_month)) %>% 
+  ungroup() %>% 
+  group_by(ticker) %>% 
+  arrange(date) %>% 
+  mutate(return = (price - lag(price, 1))/lag(price, 1),
+         log_return = log(price) -log(lag(price, 1)))
+```
+
+```{r}
+# Weekly Returns
+weekly_returns %>% 
+  group_by(ticker) %>% 
+  summarise(mean = mean(return, na.rm=TRUE), sd = sd(return, na.rm=TRUE)) %>% 
+  mutate(yearly_mean = (1+mean)^52)
+```
+
+```{r}
+# Monthly Returns
+monthly_returns %>% 
+  group_by(ticker) %>% 
+  summarise(n = n(), mean = mean(log_return, na.rm=TRUE), sd = sd(log_return, na.rm=TRUE)) %>% 
+  mutate(yearly_mean = exp(mean*12))
+```
+Histograms of weekly returns:
+
+Use qq-plots to see if the distributions are normal
+
+```{r}
+weekly_returns %>% 
+  ggplot(aes(x=log_return, fill=ticker)) +
+  geom_histogram() +
+  facet_wrap("ticker")
+
+weekly_returns %>% 
+  ggplot(aes(sample = log_return, col = ticker)) + 
+  stat_qq() + 
+  stat_qq_line() +
+  facet_wrap("ticker")
+```
+
+## Determining portfolio split
+
+In 2 years, 10% chance of losing money. How can I maximise returns?
+
+Let's look at a series of different splits.
+
+### Create portfolio splits
+
+```{r}
+grid_fn <- function(tickers, precision=0.1, sum=1) {
+  grid_for_one = data.frame(seq(0, sum, precision))
+  for (i in 1:(length(tickers) - 1)) {
+    if (i == 1) {
+      df = grid_for_one
+    } else {
+      df = df %>% bind_cols(grid_for_one)
+    }
+  }
+  
+  # Cross
+  grid_df <- df %>% 
+    cross_df() %>% 
+    # Filter out those that sum > 1
+    mutate(sum = rowSums(.)) %>% 
+    filter(sum <= 1) %>% 
+    select(-sum) %>% 
+    mutate(last = 1 - rowSums(.))
+  
+  colnames(grid_df) = tickers
+  
+  return(grid_df)
+}
+ 
+```
+
+### Create records of historical returns for each portfolio split 
+
+Currently daily, change to weekly (or monthly) - based on frequency
+
+```{r}
+portfolio_returns <- function(tickers, split, prices, frequency="week") {
+  if (!frequency %in% c("day", "week", "month")) {
+    print("Error: please specify frequency as day, week or month")
+    return;
+  }
+  
+  portfolio_data <- 
+    prices_df %>% 
+    # Keep tickers in split
+    filter(ticker %in% tickers[split > 0]) %>% 
+    # Filter on dates where all tickers existed
+    group_by(ticker) %>% 
+    mutate(min_date = min(date)) %>% 
+    ungroup() %>% 
+    group_by() %>% 
+    filter(date >= max(min_date)) %>% 
+    select(-min_date) %>% 
+    # Create columns for week, month
+    mutate(day_of_week = wday(date),
+           week_of_year = difftime(date, '2000-01-01', units = "weeks") %>% 
+           floor() %>% as.numeric(),
+           day_of_month = day(date),
+           month_of_year = month(date),
+           year = year(date))
+  
+  # Group depending on frequency
+  if (frequency == "week") {
+    portfolio_data <- portfolio_data %>% 
+      group_by(ticker, week_of_year) %>% 
+      filter(day_of_week == min(day_of_week)) %>% 
+      ungroup()
+  } else if (frequency == "month") {
+    portfolio_data <- portfolio_data %>% 
+      group_by(ticker, month_of_year, year) %>% 
+      filter(day_of_month == min(day_of_month)) %>% 
+      ungroup()
+  } else {
+    # Continue
+  }
+  
+    # Calculate return (T1/T0) for each ticker, for each period
+    portfolio_data <- portfolio_data %>% 
+      group_by(ticker) %>% 
+      arrange(date) %>%
+      mutate(price_lag = lag(price, 1),
+             price_ratio = price/price_lag) %>% 
+      filter(!is.na(price_ratio)) %>% 
+      # Attach ratio for ticker
+      left_join(
+        data.frame(ticker = tickers, share = as.numeric(split)),
+        by = 'ticker'
+      ) %>% 
+      ungroup() %>% 
+      # Calculate return (P1/P0) for portfolio, each day
+      group_by(date) %>%
+      summarise(price_ratio = sum(share*price_ratio)
+                , log_price_ratio = log(price_ratio))
+    
+  
+  return(portfolio_data)
+}
+```
+
+
+```{r}
+portfolio_returns_distribution <- function(prices_df, tickers, frequency="week") {
+  print(paste0("evaluating at ", frequency, " frequency"))
+  grid_splits = grid_fn(tickers, precision=0.1, sum=1)
+  grid_splits$mean_price_ratio = 0
+  grid_splits$sd_price_ratio = 0
+  grid_splits$mean_log_price_ratio = 0
+  grid_splits$sd_log_price_ratio = 0
+  grid_splits$ID = 1:nrow(grid_splits)
+  for (i in 1:nrow(grid_splits)) {
+    split = grid_splits[i,1:length(tickers)]
+    portfolio = portfolio_returns(tickers, split, prices_df, frequency)
+    grid_splits$mean_price_ratio[i] = mean(portfolio$price_ratio)
+    grid_splits$sd_price_ratio[i] = sd(portfolio$price_ratio)
+    grid_splits$mean_log_price_ratio[i] = mean(portfolio$log_price_ratio)
+    grid_splits$sd_log_price_ratio[i] = sd(portfolio$log_price_ratio)
+  }
+  
+  return(grid_splits)
+}
+```
+
+```{r}
+monthly_df <- portfolio_returns_distribution(prices_df, tickers, frequency='month')
+# weekly_df <- portfolio_returns_distribution(prices_df, tickers, frequency='week')
+daily_df <- portfolio_returns_distribution(prices_df, tickers, frequency='day')
+```
+
+
+### Choosing a level of risk
+
+Over 5 years, the probability of losing money = 10%
+
+Since $$\log(P_T/P_0) \approx N(\mu \times T, \sigma^2 \times T)$$
+
+We just want to calculate: $$\Pr(P_T < P_0) = \Pr(\log(P_{T}/P_0) < 0)$$
+```{r}
+monthly_df <- monthly_df %>% 
+  mutate(yr5_log_mean = 60*mean_log_price_ratio, yr5_log_sd = 60*sd_log_price_ratio) %>% 
+  mutate(yr5_loss = pnorm(0, mean = 60*mean_log_price_ratio, sd = 60*sd_log_price_ratio),
+         yr10_loss = pnorm(0, mean = 120*mean_log_price_ratio, sd = 120*sd_log_price_ratio))
+
+monthly_df %>% View
+```
+```{r}
+daily_df <- daily_df %>% 
+  mutate(yr5_log_mean = 365*5*mean_log_price_ratio, yr5_log_sd = 365*5*sd_log_price_ratio) %>% 
+  mutate(yr5_loss = pnorm(0, mean = 365*5*mean_log_price_ratio, sd = 365*5*sd_log_price_ratio),
+         yr10_loss = pnorm(0, mean = 365*10*mean_log_price_ratio, sd = 365*10*sd_log_price_ratio))
+
+daily_df %>% View
+```
+```{r}
+for (i in seq(5, 75, 5)) {
+  print(i)
+  print(pnorm(0, mean=i*monthly_df$mean_log_price_ratio[1], sd=i*monthly_df$sd_log_price_ratio[1]))
+}
+```
+
+
+
+### Determine the maximum level of risk
+
+How to measure risk? Standard deviation of returns. But how to know what is a high/low value?
+
+If I expect a 5% annual return, translate that to a weekly return. That is the distribution. Then calculate the CDF for returns (using log(returns)) over say a 5 year horizon, then find the value (sd) for which the probability of 0% return over the period is 10%. 
+
+I will have to transform the portfolio to log returns so that I can select max average log(return) at that threshold of risk.
+
+## Correlation between prices
+
+```{r}
+combinations = combn(prices_df$ticker %>% unique(),2)
+
+for (i in 1:ncol(combinations)) {
+  ticker1 = combinations[1,i]
+  ticker2 = combinations[2,i]
+  all_returns <- daily_returns %>% 
+    filter(!is.na(return)) %>% 
+    select(-c(price, log_return)) %>% 
+    filter(ticker %in% c(ticker1, ticker2))
+  start_date <- all_returns %>% 
+    group_by(ticker) %>% 
+    filter(date == min(date)) %>% 
+    ungroup() %>% 
+    filter(date == max(date)) %>% 
+    select(date)
+  df <- all_returns %>% 
+    filter(date >= start_date$date)
+  
+  # correlation
+  wide_df <- df %>% spread(key = "ticker", value = "return")
+  correl <- cor(wide_df[,ticker1], wide_df[,ticker2])
+  print(correl)
+
+  print(paste0("Correlation between: ", ticker1, " and ", ticker2, ": ", round(correl,3)))
+}
+```
+
+
+## Next steps: detect autocorrelation, and find the stationary series
