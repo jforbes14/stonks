@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyquant)
 library(tidyverse)
 library(lubridate)
+library(MarkowitzR)
 ```
 
 ## Load portfolio
@@ -40,7 +41,7 @@ get_prices <- function(ticker, from="1900-01-01", to=Sys.Date()) {
                   ) %>% as.data.frame()
   colnames(x) <- c('Open', 'High', 'Low', 'Close', 'Volume', 'Adjusted')
   # x$MidPrice <- (x$High + x$Low)/2
-  extract <- data.frame(ticker = ticker, date = rownames(x), price = x$Close) %>% 
+  extract <- data.frame(ticker = ticker, date = rownames(x), price = x$Adjusted) %>% 
     fill(price, .direction = "up")
   return(extract)
 }

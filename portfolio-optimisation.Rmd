@@ -1,0 +1,181 @@
+---
+title: "portfolio-optimisation"
+author: "Jeremy Forbes"
+date: "04/07/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Useful packages
+
+```{r, echo=FALSE}
+library(tidyquant)
+library(tidyverse)
+```
+
+## Load portfolio
+
+Currently I have:
+- NDQ.AX
+- A200.AX
+- ASIA.AX
+
+```{r}
+tickers = c('NDQ.AX', 'A200.AX', 'ASIA.AX') %>%
+  sort()
+```
+
+Function to get daily prices
+
+```{r}
+get_prices <- function(ticker, from="1900-01-01", to=Sys.Date()) {
+  x <- getSymbols(ticker,
+                  src = 'yahoo',
+                  from="1900-01-01", 
+                  to=Sys.Date(),
+                  auto.assign = FALSE
+                  ) %>% as.data.frame()
+  colnames(x) <- c('Open', 'High', 'Low', 'Close', 'Volume', 'Adjusted')
+  # x$MidPrice <- (x$High + x$Low)/2
+  extract <- data.frame(ticker = ticker, date = rownames(x), price = x$Adjusted) %>% 
+    fill(price, .direction = "up")
+  return(extract)
+}
+```
+
+Load all prices into a long dataframe
+
+```{r}
+remove(prices_df)
+for (ticker in tickers) {
+  prc = get_prices(ticker)
+  if (exists("prices_df")) {
+    prices_df = prices_df %>% 
+      bind_rows(prc)
+  } else {
+    prices_df = prc
+  }
+}
+
+prices_df <- prices_df %>% 
+  mutate(date = as.Date(date))
+
+prices_df %>% summary()
+```
+
+## Compute daily returns
+
+```{r}
+daily_returns <- prices_df %>%
+  group_by(ticker) %>% 
+  arrange(date) %>% 
+  mutate(return = (price - lag(price, 1))/lag(price, 1),
+         log_return = log(price) -log(lag(price, 1)))
+```
+
+## Compute mean returns and covariance matrix
+
+First create a data frame of prices for the same dates
+
+```{r}
+valid_dates <- daily_returns %>% 
+  filter(!is.na(return)) %>% 
+  group_by(date) %>% 
+  summarise(n = n()) %>% 
+  filter(n == length(tickers)) %>% 
+  select(date)
+```
+
+```{r}
+portfolio_data <- daily_returns %>% 
+  filter(date %in% valid_dates$date) %>% 
+  select(-c(price, return)) %>% 
+  spread(key = ticker, value = log_return) %>% 
+  select(-date)
+```
+
+```{r}
+# Daily return
+mean_returns <- colMeans(portfolio_data)
+
+# Covariance for daily returns, annualised as there are 252 business days
+cov_returns <- cov(portfolio_data) * 252
+```
+
+## Grid search of portfolio splits
+
+```{r}
+grid_fn <- function(tickers, precision=0.1, sum=1) {
+  grid_for_one = data.frame(seq(0, sum, precision))
+  for (i in 1:(length(tickers) - 1)) {
+    if (i == 1) {
+      df = grid_for_one
+    } else {
+      df = df %>% bind_cols(grid_for_one)
+    }
+  }
+  
+  # Cross
+  grid_df <- df %>% 
+    cross_df() %>% 
+    # Filter out those that sum > 1
+    mutate(sum = rowSums(.)) %>% 
+    filter(sum <= 1) %>% 
+    select(-sum) %>% 
+    mutate(last = 1 - rowSums(.))
+  
+  colnames(grid_df) = tickers
+  
+  return(grid_df %>% as.matrix())
+}
+```
+
+```{r}
+candidate_wts = grid_fn(tickers, precision=0.05)
+```
+
+## Calculate returns and risk
+
+```{r}
+# Annual returns
+port_returns <- (candidate_wts %*% mean_returns + 1)^252 - 1
+```
+
+```{r}
+# Annual risk
+compute_risk <- function(wts) {
+  return(sqrt(t(wts) %*% (cov_returns %*% wts)))
+}
+
+port_risk <- candidate_wts %>% apply(1,compute_risk)
+```
+
+```{r}
+# Combine into data frame
+df <- data_frame(
+  return = port_returns %>% as.vector(),
+  risk = port_risk %>% as.vector()
+) %>% 
+  mutate(sharpe_ratio = return/risk) %>% 
+  bind_cols(candidate_wts %>% as.data.frame())
+```
+
+```{r}
+# Maximum sharpe ratio
+df %>% 
+  arrange(desc(sharpe_ratio)) %>% 
+  head()
+```
+
+
+## Plot
+
+```{r}
+df %>% 
+  ggplot(aes(x=risk, y=return, col=sharpe_ratio)) +
+    geom_point()
+```
+
