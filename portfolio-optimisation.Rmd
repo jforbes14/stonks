@@ -24,7 +24,18 @@ Currently I have:
 - ASIA.AX
 
 ```{r}
-tickers = c('NDQ.AX', 'A200.AX', 'ASIA.AX') %>%
+tickers = c(
+  'NDQ.AX'
+  , 'A200.AX'
+  , 'ASIA.AX'
+  , 'F100.AX'
+  , 'GGUS.AX'
+  , 'ETPMPD.AX'
+  , 'QRE.AX'
+  , 'MVR.AX'
+  , 'MVE.AX'
+  , 'HACK.AX'
+  ) %>%
   sort()
 ```
 
@@ -107,6 +118,8 @@ cov_returns <- cov(portfolio_data) * 252
 
 ## Grid search of portfolio splits
 
+Only feasible for a limited group of stocks
+
 ```{r}
 grid_fn <- function(tickers, precision=0.1, sum=1) {
   grid_for_one = data.frame(seq(0, sum, precision))
@@ -133,8 +146,28 @@ grid_fn <- function(tickers, precision=0.1, sum=1) {
 }
 ```
 
+## Random portfolio splits
+
 ```{r}
-candidate_wts = grid_fn(tickers, precision=0.05)
+random_splits <- function(tickers, n=1000000) {
+  random_wts <- matrix(runif(n*length(tickers)), ncol=length(tickers))
+  colnames(random_wts) = tickers
+  standardised_wts <- random_wts / rowSums(random_wts)
+  rounded_wts <- round(standardised_wts, 2)
+  
+  # Discard any that don't add to 1 exactly
+  out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
+    unique()
+  
+  return(out)
+}
+```
+
+
+```{r}
+# candidate_wts = grid_fn(tickers, precision=0.1)
+candidate_wts = random_splits(tickers)
+candidate_wts %>% dim
 ```
 
 ## Calculate returns and risk
@@ -176,6 +209,17 @@ df %>%
 ```{r}
 df %>% 
   ggplot(aes(x=risk, y=return, col=sharpe_ratio)) +
-    geom_point()
+  geom_point(size=0.25) +
+  scale_color_gradient(low = 'purple', high = 'orange')
+```
+
+## Take the best 100 portfolio options, and average the splits for each share
+
+```{r}
+df %>% 
+  arrange(desc(sharpe_ratio)) %>% 
+  head(100) %>% 
+  colMeans() %>% 
+  round(2)
 ```
 
