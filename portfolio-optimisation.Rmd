@@ -28,13 +28,14 @@ tickers = c(
   'NDQ.AX'
   , 'A200.AX'
   , 'ASIA.AX'
+  , 'MOAT.AX'
   , 'F100.AX'
-  , 'GGUS.AX'
-  , 'ETPMPD.AX'
-  , 'QRE.AX'
-  , 'MVR.AX'
-  , 'MVE.AX'
   , 'HACK.AX'
+  # , 'GGUS.AX'
+  # , 'ETPMPD.AX'
+  # , 'QRE.AX'
+  # , 'MVR.AX'
+  # , 'MVE.AX'
   ) %>%
   sort()
 ```
@@ -110,11 +111,93 @@ portfolio_data <- daily_returns %>%
 
 ```{r}
 # Daily return
-mean_returns <- colMeans(portfolio_data)
+mean_daily_returns <- colMeans(portfolio_data)
+
+# Annualised
+mean_returns <- (mean_daily_returns + 1)^252 - 1
 
 # Covariance for daily returns, annualised as there are 252 business days
 cov_returns <- cov(portfolio_data) * 252
 ```
+
+## Global minimum variance
+
+```{r}
+one_vec = rep(1, length(tickers))
+cov_returns_inv = solve(cov_returns)
+top.mat = cov_returns_inv%*%one_vec
+bot.val = as.numeric((t(one_vec)%*%cov_returns_inv%*%one_vec))
+min_var_split = top.mat/bot.val
+
+# Print minmum variance portfolio
+mvp = min_var_split[,1]
+mvp
+
+# Annual return
+mvp_return = (mvp%*%mean_returns)[1,1]
+mvp_return
+
+# Annual risk
+mvp_variance = as.numeric(t(mvp) %*% cov_returns %*% mvp)
+mvp_sigma = mvp_variance %>% sqrt()
+mvp_sigma
+```
+
+
+```{r}
+asset.names <- c("MSFT", "NORD", "SBUX")
+mu.vec = c(0.0427, 0.0015, 0.0285)
+names(mu.vec) = asset.names
+sigma.mat = matrix(c(0.0100, 0.0018, 0.0011,
+0.0018, 0.0109, 0.0026,
+0.0011, 0.0026, 0.0199),
+nrow=3, ncol=3)
+dimnames(sigma.mat) = list(asset.names, asset.names)
+
+one.vec = rep(1, 3)
+sigma.inv.mat = solve(sigma.mat)
+top.mat = sigma.inv.mat%*%one.vec
+bot.val = as.numeric((t(one.vec)%*%sigma.inv.mat%*%one.vec))
+m.mat = top.mat/bot.val
+m.mat[,1]
+```
+
+## Global maximum sharpe ratio
+
+```{r}
+rf = 0
+mean_returns_less_rf = mean_returns - rf
+one_vec = rep(1, length(tickers))
+cov_returns_inv = solve(cov_returns)
+top.mat = cov_returns_inv%*%one_vec
+bot.val = as.numeric(t(one_vec)%*%top.mat)
+op = top.mat[,1]/bot.val
+
+# Optimal portfolio
+op
+
+# Annual return
+op_return = (op%*%mean_returns)[1,1]
+op_return
+
+# Annual risk
+op_variance = as.numeric(t(op) %*% cov_returns %*% op)
+op_sigma = op_variance %>% sqrt()
+op_sigma
+```
+
+
+```{r}
+rf = 0
+sigma.inv.mat = solve(sigma.mat)
+one.vec = rep(1, 3)
+mu.minus.rf = mu.vec - rf*one.vec
+top.mat = sigma.inv.mat%*%mu.minus.rf
+bot.val = as.numeric(t(one.vec)%*%top.mat)
+t.vec = top.mat[,1]/bot.val
+t.vec
+```
+
 
 ## Grid search of portfolio splits
 
@@ -174,7 +257,7 @@ candidate_wts %>% dim
 
 ```{r}
 # Annual returns
-port_returns <- (candidate_wts %*% mean_returns + 1)^252 - 1
+port_returns <- (candidate_wts %*% mean_daily_returns + 1)^252 - 1
 ```
 
 ```{r}
@@ -204,14 +287,13 @@ df %>%
 ```
 
 
-## Plot
-
 ```{r}
+# Minimum risk
 df %>% 
-  ggplot(aes(x=risk, y=return, col=sharpe_ratio)) +
-  geom_point(size=0.25) +
-  scale_color_gradient(low = 'purple', high = 'orange')
+  arrange(risk) %>% 
+  head()
 ```
+
 
 ## Take the best 100 portfolio options, and average the splits for each share
 
@@ -221,5 +303,16 @@ df %>%
   head(100) %>% 
   colMeans() %>% 
   round(2)
+```
+
+
+
+## Plot
+
+```{r}
+df %>% 
+  ggplot(aes(x=risk, y=return, col=sharpe_ratio)) +
+  geom_point(size=0.25) +
+  scale_color_gradient(low = 'purple', high = 'orange')
 ```
 
