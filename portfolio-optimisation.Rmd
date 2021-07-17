@@ -169,36 +169,6 @@ op_sigma
 ```
 
 
-## Grid search of portfolio splits
-
-Only feasible for a limited group of stocks
-
-```{r}
-grid_fn <- function(tickers, precision=0.1, sum=1) {
-  grid_for_one = data.frame(seq(0, sum, precision))
-  for (i in 1:(length(tickers) - 1)) {
-    if (i == 1) {
-      df = grid_for_one
-    } else {
-      df = df %>% bind_cols(grid_for_one)
-    }
-  }
-  
-  # Cross
-  grid_df <- df %>% 
-    cross_df() %>% 
-    # Filter out those that sum > 1
-    mutate(sum = rowSums(.)) %>% 
-    filter(sum <= 1) %>% 
-    select(-sum) %>% 
-    mutate(last = 1 - rowSums(.))
-  
-  colnames(grid_df) = tickers
-  
-  return(grid_df %>% as.matrix())
-}
-```
-
 ## Random portfolio splits
 
 ```{r}
