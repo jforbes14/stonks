@@ -144,24 +144,6 @@ mvp_sigma
 ```
 
 
-```{r}
-asset.names <- c("MSFT", "NORD", "SBUX")
-mu.vec = c(0.0427, 0.0015, 0.0285)
-names(mu.vec) = asset.names
-sigma.mat = matrix(c(0.0100, 0.0018, 0.0011,
-0.0018, 0.0109, 0.0026,
-0.0011, 0.0026, 0.0199),
-nrow=3, ncol=3)
-dimnames(sigma.mat) = list(asset.names, asset.names)
-
-one.vec = rep(1, 3)
-sigma.inv.mat = solve(sigma.mat)
-top.mat = sigma.inv.mat%*%one.vec
-bot.val = as.numeric((t(one.vec)%*%sigma.inv.mat%*%one.vec))
-m.mat = top.mat/bot.val
-m.mat[,1]
-```
-
 ## Global maximum sharpe ratio
 
 ```{r}
@@ -184,18 +166,6 @@ op_return
 op_variance = as.numeric(t(op) %*% cov_returns %*% op)
 op_sigma = op_variance %>% sqrt()
 op_sigma
-```
-
-
-```{r}
-rf = 0
-sigma.inv.mat = solve(sigma.mat)
-one.vec = rep(1, 3)
-mu.minus.rf = mu.vec - rf*one.vec
-top.mat = sigma.inv.mat%*%mu.minus.rf
-bot.val = as.numeric(t(one.vec)%*%top.mat)
-t.vec = top.mat[,1]/bot.val
-t.vec
 ```
 
 
