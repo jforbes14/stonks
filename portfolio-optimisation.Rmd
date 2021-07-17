@@ -188,7 +188,6 @@ random_splits <- function(tickers, n=1000000) {
 
 
 ```{r}
-# candidate_wts = grid_fn(tickers, precision=0.1)
 candidate_wts = random_splits(tickers)
 candidate_wts %>% dim
 ```
