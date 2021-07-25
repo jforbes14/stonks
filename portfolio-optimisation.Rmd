@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Useful packages
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 library(tidyquant)
 library(tidyverse)
 ```
