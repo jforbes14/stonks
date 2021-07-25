@@ -121,6 +121,47 @@ cov_returns <- function(daily_returns) {
   return(cov(daily_returns) * 252)
 }
 
+# Global minimum variance portfolio (analytical)
+# Input
+# mean_returns: vector of annualized returns
+# cov_returns: covariance matrix of annualized returns
+# Returns
+# Vector of weights for global minimum variance portfolio
+
+global_minimum_variance_portfolio <- function(mean_returns, cov_returns) {
+  one_vec = rep(1, length(mean_returns))
+  cov_returns_inv = solve(cov_returns)
+  top.mat = cov_returns_inv%*%one_vec
+  bot.val = as.numeric((t(one_vec)%*%cov_returns_inv%*%one_vec))
+  min_var_split = top.mat/bot.val
+  
+  return(min_var_split)
+}
+
+# Global optimal portfolio, for maximum sharpe ratio (analytical)
+# Input
+# mean_returns: vector of annualized returns
+# cov_returns: covariance matrix of annualized returns
+# rf: risk-free rate
+# Returns
+# Vector of weights for global optimal portfolio (maximum sharpe ratio)
+
+global_optimal_portfolio <- function(mean_returns, cov_returns, rf=0) {
+  mean_returns_less_rf = mean_returns - rf
+  one_vec = rep(1, length(mean_returns))
+  cov_returns_inv = solve(cov_returns)
+  top.mat = cov_returns_inv%*%mean_returns_less_rf
+  bot.val = as.numeric(t(one_vec)%*%top.mat)
+  op = top.mat[,1]/bot.val
+  return(op)
+}
+
+
+# Print minmum variance portfolio
+mvp = min_var_split[,1]
+mvp
+
+
 tickers_raw = c('A200.AX', 'NDQ')
 tickers = add_AX_to_tickers(tickers_raw)
 
@@ -128,3 +169,5 @@ df <- get_prices_for_all_tickers(tickers)
 daily <- daily_returns(df)
 mr <- mean_returns(daily)
 cv <- cov_returns(daily)
+global_minimum_variance_portfolio(mr, cv)
+global_optimal_portfolio(mr, cv)
