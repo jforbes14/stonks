@@ -151,7 +151,7 @@ rf = 0
 mean_returns_less_rf = mean_returns - rf
 one_vec = rep(1, length(tickers))
 cov_returns_inv = solve(cov_returns)
-top.mat = cov_returns_inv%*%one_vec
+top.mat = cov_returns_inv%*%mean_returns_less_rf
 bot.val = as.numeric(t(one_vec)%*%top.mat)
 op = top.mat[,1]/bot.val
 
