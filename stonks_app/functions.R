@@ -3,6 +3,7 @@
 #
 library(tidyquant)
 library(tidyverse)
+options("getSymbols.warning4.0"=FALSE)
 
 # Test function
 # Input
@@ -23,7 +24,7 @@ add_AX_to_tickers <- function(tickers) {
       tickers[tickers == ticker] = paste0(ticker, '.AX')
     }
   }
-  return(tickers)
+  return(sort(tickers))
 }
 
 # Get prices for a given stock
@@ -78,7 +79,7 @@ get_prices_for_all_tickers <- function(tickers, from="1900-01-01", to=Sys.Date()
 # Returns
 # Data frame of daily returns, for each stock, keeping only common dates
 daily_returns <- function(prices_df) {
-  tickers = unique(df$ticker)
+  tickers = unique(prices_df$ticker)
   
   daily_returns <- prices_df %>%
     group_by(ticker) %>% 
@@ -133,9 +134,9 @@ global_minimum_variance_portfolio <- function(mean_returns, cov_returns) {
   cov_returns_inv = solve(cov_returns)
   top.mat = cov_returns_inv%*%one_vec
   bot.val = as.numeric((t(one_vec)%*%cov_returns_inv%*%one_vec))
-  min_var_split = top.mat/bot.val
-  
-  return(min_var_split)
+  mvp = top.mat[,1]/bot.val
+  mvp_df = t(mvp) %>% as.data.frame()
+  return(mvp_df)
 }
 
 # Global optimal portfolio, for maximum sharpe ratio (analytical)
@@ -153,21 +154,6 @@ global_optimal_portfolio <- function(mean_returns, cov_returns, rf=0) {
   top.mat = cov_returns_inv%*%mean_returns_less_rf
   bot.val = as.numeric(t(one_vec)%*%top.mat)
   op = top.mat[,1]/bot.val
-  return(op)
+  op_df = t(op) %>% as.data.frame()
+  return(op_df)
 }
-
-
-# Print minmum variance portfolio
-mvp = min_var_split[,1]
-mvp
-
-
-tickers_raw = c('A200.AX', 'NDQ')
-tickers = add_AX_to_tickers(tickers_raw)
-
-df <- get_prices_for_all_tickers(tickers)
-daily <- daily_returns(df)
-mr <- mean_returns(daily)
-cv <- cov_returns(daily)
-global_minimum_variance_portfolio(mr, cv)
-global_optimal_portfolio(mr, cv)

@@ -8,26 +8,58 @@
 #
 
 library(shiny)
+library(shinyjs)
+
+jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
+
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("STONKS APP"),
+    
+    # # Reset all
+    # useShinyjs(),                                           # Include shinyjs in the UI
+    # extendShinyjs(text = jsResetCode, functions = "reset"), # Add the js code to the page
+    # actionButton("reset_button", "Reset Page"),
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            # Selectize
+            selectizeInput(
+                "tickers_vec"
+                , "Enter tickers for up to 10 stocks (at least 2)"
+                , choices = NULL
+                , multiple = TRUE
+                , options = list(create = TRUE)
+            ),
+            
+            actionButton("go", "Press GO"),
+            actionButton("refresh", "refresh")
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("distPlot")
+            
+            # Print tickers
+            h4("You have selected")
+            , verbatimTextOutput("selected_tickers")
+            , h4("All prices summary")
+            , verbatimTextOutput("all_prices_summary")
+            , h4("All prices header")
+            , tableOutput("all_prices_table")
+            , h4("Random number")
+            , verbatimTextOutput("runif")
+            
+            # # Display analytical MVP
+            # , h4("Minimum Variance Portfolio")
+            # , tableOutput("MVP")
+
+            # # Display analytical OP
+            # , h4("Optimal Portfolio")
+            # , tableOutput("OP")
         )
     )
 ))
