@@ -38,7 +38,7 @@ get_prices_for_ticker <- function(ticker, from="1900-01-01", to=Sys.Date()) {
   x <- suppressWarnings(
     getSymbols(ticker,
                     src = 'yahoo',
-                    from="1900-01-01", 
+                    from="2015-01-01", 
                     to=Sys.Date(),
                     auto.assign = FALSE
     ) %>% as.data.frame()
@@ -58,6 +58,7 @@ get_prices_for_ticker <- function(ticker, from="1900-01-01", to=Sys.Date()) {
 # Data frame of daily adjusted stock price
 get_prices_for_all_tickers <- function(tickers, from="1900-01-01", to=Sys.Date()) {
   for (ticker in tickers) {
+    print(paste("Getting prices for", ticker))
     prc = get_prices_for_ticker(ticker, from, to)
     if (ticker != tickers[1]) {
       prices_df = prices_df %>% 

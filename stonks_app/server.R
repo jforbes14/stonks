@@ -28,41 +28,35 @@ shinyServer(function(input, output, session) {
         input$go,
         {
             # Add .AX suffix to tickers and order
-            tickers <- reactive({add_AX_to_tickers(input$tickers_vec)})
+            tickers <- add_AX_to_tickers(input$tickers_vec)
 
             # Fetch returns
-            df <- get_prices_for_all_tickers(tickers())
+            df <- get_prices_for_all_tickers(tickers)
 
             daily_df <- daily_returns(df)
 
-            # output$mr <- mean_returns(daily_df)
-            # output$cv <- cov_returns(daily_df)
-            # mvp <- global_minimum_variance_portfolio(mr, cv)
-            # op <- global_optimal_portfolio(mr, cv)
+            mr <- mean_returns(daily_df)
+            cv <- cov_returns(daily_df)
+            mvp <- global_minimum_variance_portfolio(mr, cv)
+            op <- global_optimal_portfolio(mr, cv)
 
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({
                 req(input$tickers_vec)
                 cat("As string:\n")
-                tickers()
+                tickers
             })
 
-            # Print out summary of all prices
-            output$all_prices_summary <- renderPrint({
-                req(input$tickers_vec)
-                df %>% summary()
-            })
-            
             # Print out table of all prices header
             output$all_prices_table <- renderTable({
                 req(input$tickers_vec)
-                df %>% 
-                    group_by(ticker) %>% 
+                df %>%
+                    group_by(ticker) %>%
                     top_n(1, date)
             }, digits = 2)
-
-            # Print out test
-            output$test2 <- renderPrint({
+            
+            # Print out summary of daily returns
+            output$daily_returns_summary <- renderPrint({
                 req(input$tickers_vec)
                 daily_df %>% summary()
             })
@@ -72,17 +66,17 @@ shinyServer(function(input, output, session) {
                 runif(1)
             })
 
-            # # Render table to display the minimum variance portfolio
-            # output$MVP <- renderTable({
-            #     req(input$tickers_vec)
-            #     mvp
-            # }, digits = 2)
+            # Render table to display the minimum variance portfolio
+            output$MVP <- renderTable({
+                req(input$tickers_vec)
+                mvp
+            }, digits = 2)
 
-            # # Render table to display the optimal portfolio
-            # output$OP <- renderTable({
-            #     req(input$tickers_vec)
-            #     op
-            # }, digits = 2)
+            # Render table to display the optimal portfolio
+            output$OP <- renderTable({
+                req(input$tickers_vec)
+                op
+            }, digits = 2)
         }
     )
 })

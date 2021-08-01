@@ -36,8 +36,7 @@ shinyUI(fluidPage(
                 , options = list(create = TRUE)
             ),
             
-            actionButton("go", "Press GO"),
-            actionButton("refresh", "refresh")
+            actionButton("go", "Press GO")
         ),
 
         # Show a plot of the generated distribution
@@ -46,20 +45,22 @@ shinyUI(fluidPage(
             # Print tickers
             h4("You have selected")
             , verbatimTextOutput("selected_tickers")
-            , h4("All prices summary")
-            , verbatimTextOutput("all_prices_summary")
             , h4("All prices header")
             , tableOutput("all_prices_table")
+            , h4("Daily returns summary")
+            , verbatimTextOutput("daily_returns_summary")
+            
+            # Display analytical MVP
+            , h4("Minimum Variance Portfolio")
+            , tableOutput("MVP")
+
+            # Display analytical OP
+            , h4("Optimal Portfolio")
+            , tableOutput("OP")
+            
+
             , h4("Random number")
             , verbatimTextOutput("runif")
-            
-            # # Display analytical MVP
-            # , h4("Minimum Variance Portfolio")
-            # , tableOutput("MVP")
-
-            # # Display analytical OP
-            # , h4("Optimal Portfolio")
-            # , tableOutput("OP")
         )
     )
 ))
