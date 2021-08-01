@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
         input$go,
         {
             # Add .AX suffix to tickers and order
-            tickers <- add_AX_to_tickers(input$tickers_vec)
+            tickers <- add_AX_to_tickers(input$tickersInput)
 
             # Fetch returns
             df <- get_prices_for_all_tickers(tickers)
@@ -42,14 +42,14 @@ shinyServer(function(input, output, session) {
 
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({
-                req(input$tickers_vec)
+                req(input$tickersInput)
                 cat("As string:\n")
                 tickers
             })
 
             # Print out table of all prices header
             output$all_prices_table <- renderTable({
-                req(input$tickers_vec)
+                req(input$tickersInput)
                 df %>%
                     group_by(ticker) %>%
                     top_n(1, date)
@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
             
             # Print out summary of daily returns
             output$daily_returns_summary <- renderPrint({
-                req(input$tickers_vec)
+                req(input$tickersInput)
                 daily_df %>% summary()
             })
 
@@ -68,13 +68,13 @@ shinyServer(function(input, output, session) {
 
             # Render table to display the minimum variance portfolio
             output$MVP <- renderTable({
-                req(input$tickers_vec)
+                req(input$tickersInput)
                 mvp
             }, digits = 2)
 
             # Render table to display the optimal portfolio
             output$OP <- renderTable({
-                req(input$tickers_vec)
+                req(input$tickersInput)
                 op
             }, digits = 2)
         }

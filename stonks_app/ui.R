@@ -29,11 +29,11 @@ shinyUI(fluidPage(
         sidebarPanel(
             # Selectize
             selectizeInput(
-                "tickers_vec"
+                "tickersInput"
                 , "Enter tickers for up to 10 stocks (at least 2)"
                 , choices = NULL
                 , multiple = TRUE
-                , options = list(create = TRUE)
+                , options = list(create = TRUE, maxItems = 10)
             ),
             
             actionButton("go", "Press GO")

@@ -19,6 +19,7 @@ hello <- function() {
 # Returns
 # Vector of ASX tickers with .AX suffix
 add_AX_to_tickers <- function(tickers) {
+  tickers = toupper(tickers)
   for (ticker in tickers) {
     if (!grepl('.AX', ticker)) {
       tickers[tickers == ticker] = paste0(ticker, '.AX')
