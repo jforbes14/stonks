@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r, echo=FALSE, include=FALSE}
 library(tidyquant)
 library(tidyverse)
+source("stonks_app/functions.R")
 ```
 
 ## Load portfolio
@@ -25,12 +26,14 @@ Currently I have:
 
 ```{r}
 tickers = c(
-  'NDQ.AX'
-  , 'A200.AX'
-  , 'ASIA.AX'
-  , 'MOAT.AX'
-  , 'F100.AX'
-  , 'HACK.AX'
+  'NAB.AX'
+  , 'ANZ.AX'
+  # 'NDQ.AX'
+  # , 'A200.AX'
+  # , 'ASIA.AX'
+  # , 'MOAT.AX'
+  # , 'F100.AX'
+  # , 'HACK.AX'
   # , 'GGUS.AX'
   # , 'ETPMPD.AX'
   # , 'QRE.AX'
@@ -40,93 +43,39 @@ tickers = c(
   sort()
 ```
 
-Function to get daily prices
+Get daily prices
 
 ```{r}
-get_prices <- function(ticker, from="1900-01-01", to=Sys.Date()) {
-  x <- getSymbols(ticker,
-                  src = 'yahoo',
-                  from="1900-01-01", 
-                  to=Sys.Date(),
-                  auto.assign = FALSE
-                  ) %>% as.data.frame()
-  colnames(x) <- c('Open', 'High', 'Low', 'Close', 'Volume', 'Adjusted')
-  # x$MidPrice <- (x$High + x$Low)/2
-  extract <- data.frame(ticker = ticker, date = rownames(x), price = x$Adjusted) %>% 
-    fill(price, .direction = "up")
-  return(extract)
-}
+# Daily prices
+prices_df <- get_prices_for_all_tickers(tickers)
 ```
 
-Load all prices into a long dataframe
+Get daily returns
 
 ```{r}
-remove(prices_df)
-for (ticker in tickers) {
-  prc = get_prices(ticker)
-  if (exists("prices_df")) {
-    prices_df = prices_df %>% 
-      bind_rows(prc)
-  } else {
-    prices_df = prc
-  }
-}
-
-prices_df <- prices_df %>% 
-  mutate(date = as.Date(date))
-
-prices_df %>% summary()
+# Daily returns
+daily_returns <- daily_returns(prices_df)
 ```
 
-## Compute daily returns
+Compute mean returns and covariance matrix
 
 ```{r}
-daily_returns <- prices_df %>%
-  group_by(ticker) %>% 
-  arrange(date) %>% 
-  mutate(return = (price - lag(price, 1))/lag(price, 1),
-         log_return = log(price) -log(lag(price, 1)))
+mean_rtrn <- mean_returns(daily_returns)
+cov_rtrn <- cov_returns(daily_returns)
+
+mean_rtrn
+cov_rtrn
 ```
 
-## Compute mean returns and covariance matrix
 
-First create a data frame of prices for the same dates
-
-```{r}
-valid_dates <- daily_returns %>% 
-  filter(!is.na(return)) %>% 
-  group_by(date) %>% 
-  summarise(n = n()) %>% 
-  filter(n == length(tickers)) %>% 
-  select(date)
-```
-
-```{r}
-portfolio_data <- daily_returns %>% 
-  filter(date %in% valid_dates$date) %>% 
-  select(-c(price, return)) %>% 
-  spread(key = ticker, value = log_return) %>% 
-  select(-date)
-```
-
-```{r}
-# Daily return
-mean_daily_returns <- colMeans(portfolio_data)
-
-# Annualised
-mean_returns <- (mean_daily_returns + 1)^252 - 1
-
-# Covariance for daily returns, annualised as there are 252 business days
-cov_returns <- cov(portfolio_data) * 252
-```
 
 ## Global minimum variance
 
 ```{r}
 one_vec = rep(1, length(tickers))
-cov_returns_inv = solve(cov_returns)
-top.mat = cov_returns_inv%*%one_vec
-bot.val = as.numeric((t(one_vec)%*%cov_returns_inv%*%one_vec))
+cov_rtrn_inv = solve(cov_rtrn)
+top.mat = cov_rtrn_inv%*%one_vec
+bot.val = as.numeric((t(one_vec)%*%cov_rtrn_inv%*%one_vec))
 min_var_split = top.mat/bot.val
 
 # Print minmum variance portfolio
@@ -134,11 +83,11 @@ mvp = min_var_split[,1]
 mvp
 
 # Annual return
-mvp_return = (mvp%*%mean_returns)[1,1]
+mvp_return = (mvp%*%mean_rtrn)[1,1]
 mvp_return
 
 # Annual risk
-mvp_variance = as.numeric(t(mvp) %*% cov_returns %*% mvp)
+mvp_variance = as.numeric(t(mvp) %*% cov_rtrn %*% mvp)
 mvp_sigma = mvp_variance %>% sqrt()
 mvp_sigma
 ```
@@ -148,10 +97,10 @@ mvp_sigma
 
 ```{r}
 rf = 0
-mean_returns_less_rf = mean_returns - rf
+mean_rtrn_less_rf = mean_rtrn - rf
 one_vec = rep(1, length(tickers))
-cov_returns_inv = solve(cov_returns)
-top.mat = cov_returns_inv%*%mean_returns_less_rf
+cov_rtrn_inv = solve(cov_rtrn)
+top.mat = cov_rtrn_inv%*%mean_rtrn_less_rf
 bot.val = as.numeric(t(one_vec)%*%top.mat)
 op = top.mat[,1]/bot.val
 
@@ -159,11 +108,11 @@ op = top.mat[,1]/bot.val
 op
 
 # Annual return
-op_return = (op%*%mean_returns)[1,1]
+op_return = (op%*%mean_rtrn)[1,1]
 op_return
 
 # Annual risk
-op_variance = as.numeric(t(op) %*% cov_returns %*% op)
+op_variance = as.numeric(t(op) %*% cov_rtrn %*% op)
 op_sigma = op_variance %>% sqrt()
 op_sigma
 ```
@@ -172,7 +121,7 @@ op_sigma
 ## Random portfolio splits
 
 ```{r}
-random_splits <- function(tickers, n=1000000) {
+random_splits <- function(tickers, n=100) {
   random_wts <- matrix(runif(n*length(tickers)), ncol=length(tickers))
   colnames(random_wts) = tickers
   standardised_wts <- random_wts / rowSums(random_wts)
@@ -188,7 +137,7 @@ random_splits <- function(tickers, n=1000000) {
 
 
 ```{r}
-candidate_wts = random_splits(tickers)
+candidate_wts = random_splits(tickers, n=100)
 candidate_wts %>% dim
 ```
 
@@ -201,11 +150,21 @@ port_returns <- (candidate_wts %*% mean_daily_returns + 1)^252 - 1
 
 ```{r}
 # Annual risk
-compute_risk <- function(wts) {
+compute_risk <- function(cov_returns, wts) {
   return(sqrt(t(wts) %*% (cov_returns %*% wts)))
 }
 
-port_risk <- candidate_wts %>% apply(1,compute_risk)
+port_risk <- candidate_wts %>% apply(1,compute_risk, cov_returns=cov_rtrn)
+```
+
+```{r}
+cov_rtrn
+x = c(0.5, 0.5)
+x
+```
+
+```{r}
+compute_risk(cov_rtrn, x)
 ```
 
 ```{r}
