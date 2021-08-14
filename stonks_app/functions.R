@@ -159,3 +159,52 @@ global_optimal_portfolio <- function(mean_returns, cov_returns, rf=0) {
   op_df = t(op) %>% as.data.frame()
   return(op_df)
 }
+
+# Generate random portfolio splits for the tickers entered
+# Input
+# tickers: vector of ASX tickers, of length t
+# n: number of random splits to generate
+# Returns
+# Array of random splits, with n rows and t columns
+
+random_splits <- function(tickers, n=100) {
+  random_wts <- matrix(runif(n*length(tickers)), ncol=length(tickers))
+  colnames(random_wts) = tickers
+  standardised_wts <- random_wts / rowSums(random_wts)
+  rounded_wts <- round(standardised_wts, 2)
+  
+  # Discard any that don't add to 1 exactly
+  out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
+    unique()
+  
+  return(out)
+}
+
+
+# Compute risk values for a candidate portfolio (sd of returns) 
+# Input
+# cov_matrix: covariance matrix for portfolio
+# wts: portfolio split vector for a given sample
+# Returns
+# Risk value for the given portfolio split
+compute_risk <- function(cov_returns, wts) {
+  return(sqrt(t(wts) %*% (cov_returns %*% wts)))
+}
+
+# Combine sampled portfolios into data frame and calculate sharpe ratio
+# Input
+# splits: array of portfolio splits with tickers as colnames
+# returns: array of annual returns for each potential portfolio
+# risk: array of annual risk for each potential portfolio
+# Returns
+# Risk value for the given portfolio split
+portfolios_sharpe_ratio_df <- function(splits, returns, risk) {
+  return(
+    data_frame(
+      return = returns %>% as.vector(),
+      risk = risk %>% as.vector()
+    ) %>%
+      mutate(sharpe_ratio = return/risk) %>%
+      bind_cols(splits %>% as.data.frame())
+  )
+}

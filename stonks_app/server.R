@@ -14,10 +14,6 @@ library(shiny)
 
 source("functions.R")
 
-## ISSUES
-# - Updating tickers does not re-do calculation and throws error
-# - Entering 1 stock should just default to 1
-
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
@@ -32,14 +28,49 @@ shinyServer(function(input, output, session) {
 
             # Fetch returns
             df <- get_prices_for_all_tickers(tickers)
-
             daily_df <- daily_returns(df)
 
+            # Compute annualised mean array and covariance matrix
             mr <- mean_returns(daily_df)
             cv <- cov_returns(daily_df)
+            
+            # Compute analytical MVP and OP
             mvp <- global_minimum_variance_portfolio(mr, cv)
             op <- global_optimal_portfolio(mr, cv)
+            
+            # Generate samples for portfolio split
+            sampled_splits <- random_splits(tickers)
+            
+            # Annual returns for each sampled split
+            a <- sampled_splits %*% mr
+            sampled_returns <- sampled_splits %*% mr
+            
+            # Annual risk for each sampled split
+            sampled_risk <- sampled_splits %>% apply(1, compute_risk, cov_returns=cv)
 
+            # Combine sampled portfolios into data frame
+            sampled_portfolio_risk_return <- portfolios_sharpe_ratio_df(
+                splits=sampled_splits,
+                returns=sampled_returns,
+                risk=sampled_risk
+            )
+            
+            # Table showing top values with maximum sharpe ratio
+            output$max_sharpe_ratio_table <- renderTable({
+                req(input$tickersInput)
+                sampled_portfolio_risk_return %>%
+                    arrange(desc(sharpe_ratio)) %>%
+                    head()
+            }, digits = 4)
+            
+            # Table showing top values with minimum risk
+            output$min_risk_table <- renderTable({
+                req(input$tickersInput)
+                sampled_portfolio_risk_return %>%
+                    arrange(risk) %>%
+                    head()
+            }, digits = 4)
+            
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({
                 req(input$tickersInput)
@@ -67,13 +98,19 @@ shinyServer(function(input, output, session) {
             })
 
             # Render table to display the minimum variance portfolio
-            output$MVP <- renderTable({
+            output$analytical_MVP <- renderTable({
                 req(input$tickersInput)
                 mvp
             }, digits = 2)
-
+            
             # Render table to display the optimal portfolio
-            output$OP <- renderTable({
+            output$analytical_OP <- renderTable({
+                req(input$tickersInput)
+                op
+            }, digits = 2)
+            
+            # Generate OP from randomly sampled splits
+            output$sampled_OP <- renderTable({
                 req(input$tickersInput)
                 op
             }, digits = 2)

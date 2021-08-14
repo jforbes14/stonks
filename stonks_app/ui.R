@@ -51,14 +51,21 @@ shinyUI(fluidPage(
             , verbatimTextOutput("daily_returns_summary")
             
             # Display analytical MVP
-            , h4("Minimum Variance Portfolio")
-            , tableOutput("MVP")
-
-            # Display analytical OP
-            , h4("Optimal Portfolio")
-            , tableOutput("OP")
+            , h4("Analytical: Minimum Variance Portfolio")
+            , tableOutput("analytical_MVP")
             
-
+            # Display analytical OP
+            , h4("Analytical: Optimal Portfolio")
+            , tableOutput("analytical_OP")
+            
+            # Display maximum sharpe ratio
+            , h4("Sampled: Most Optimal Portfolios (max. sharpe ratio)")
+            , tableOutput("max_sharpe_ratio_table")
+            
+            # Display maximum sharpe ratio
+            , h4("Sampled: Minimum Variance Portfolios")
+            , tableOutput("min_risk_table")
+            
             , h4("Random number")
             , verbatimTextOutput("runif")
         )
