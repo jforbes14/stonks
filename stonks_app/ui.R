@@ -27,7 +27,8 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            # Selectize
+            
+            # Selectize tickers
             selectizeInput(
                 "tickersInput"
                 , "Enter tickers for up to 10 stocks (at least 2)"
@@ -35,6 +36,12 @@ shinyUI(fluidPage(
                 , multiple = TRUE
                 , options = list(create = TRUE, maxItems = 10)
             ),
+            
+            # Specify number of samples for sampling approach
+            selectInput("n_samples", h3("Number of samples"), 
+                        choices = list("100" = 100, "1000" = 1000,
+                                       "1000" = 1000, "10000" = 10000,
+                                       "100000" = 100000), selected = 1),
             
             actionButton("go", "Press GO")
         ),
