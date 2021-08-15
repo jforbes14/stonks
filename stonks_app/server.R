@@ -23,6 +23,12 @@ shinyServer(function(input, output, session) {
     observeEvent(
         input$go,
         {
+            ############################################################################
+            
+            # Data computations
+            
+            ############################################################################
+            
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(input$tickersInput)
 
@@ -49,11 +55,36 @@ shinyServer(function(input, output, session) {
             sampled_risk <- sampled_splits %>% apply(1, compute_risk, cov_returns=cv)
 
             # Combine sampled portfolios into data frame
-            sampled_portfolio_risk_return <- portfolios_sharpe_ratio_df(
+            sampled_portfolio_risk_return <- portfolios_summary_df(
                 splits=sampled_splits,
                 returns=sampled_returns,
                 risk=sampled_risk
             )
+            
+            ############################################################################
+            
+            # Define outputs
+            
+            ############################################################################
+            
+            # Graph showing risk, return and sharpe ratio for each portfolio
+            output$portfolio_plot <- renderPlot({
+                req(input$tickersInput)
+                plot_sampled_portfolios(
+                    portfolios_df = sampled_portfolio_risk_return,
+                    size = 1,
+                    alpha = 1
+                )
+            })
+            
+            # Graph showing correlations for each pair of stocks in portfolio
+            output$correlation_plot <- renderPlot({
+                req(input$tickersInput)
+                plot_stock_return_correlations(
+                    daily_returns_df = daily_df
+                )
+            })
+            
             
             # Table showing top values with maximum sharpe ratio
             output$max_sharpe_ratio_table <- renderTable({

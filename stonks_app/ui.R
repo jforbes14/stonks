@@ -41,7 +41,7 @@ shinyUI(fluidPage(
             selectInput("n_samples", h3("Number of samples"), 
                         choices = list("100" = 100, "1000" = 1000,
                                        "1000" = 1000, "10000" = 10000,
-                                       "100000" = 100000), selected = 1),
+                                       "100000" = 100000, "1000000" = 1000000), selected = 1),
             
             actionButton("go", "Press GO")
         ),
@@ -52,10 +52,10 @@ shinyUI(fluidPage(
             # Print tickers
             h4("You have selected")
             , verbatimTextOutput("selected_tickers")
-            , h4("All prices header")
-            , tableOutput("all_prices_table")
-            , h4("Daily returns summary")
-            , verbatimTextOutput("daily_returns_summary")
+            
+            # Display plot of correlations
+            , h4("Correlation of stocks selected in portfolio")
+            , plotOutput("correlation_plot")
             
             # Display analytical MVP
             , h4("Analytical: Minimum Variance Portfolio")
@@ -72,6 +72,10 @@ shinyUI(fluidPage(
             # Display maximum sharpe ratio
             , h4("Sampled: Minimum Variance Portfolios")
             , tableOutput("min_risk_table")
+            
+            # Display plot of portfolios
+            , h4("Sampled: Portfolio Risk, Return and Sharpe Ratio")
+            , plotOutput("portfolio_plot")
             
             , h4("Random number")
             , verbatimTextOutput("runif")

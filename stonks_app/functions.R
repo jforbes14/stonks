@@ -198,7 +198,7 @@ compute_risk <- function(cov_returns, wts) {
 # risk: array of annual risk for each potential portfolio
 # Returns
 # Risk value for the given portfolio split
-portfolios_sharpe_ratio_df <- function(splits, returns, risk) {
+portfolios_summary_df <- function(splits, returns, risk) {
   return(
     data_frame(
       return = returns %>% as.vector(),
@@ -206,5 +206,44 @@ portfolios_sharpe_ratio_df <- function(splits, returns, risk) {
     ) %>%
       mutate(sharpe_ratio = return/risk) %>%
       bind_cols(splits %>% as.data.frame())
+  )
+}
+
+# Plot the sampled portfolios with their risk/return
+# Input
+# portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
+# as returned from portfolios_summary_df()
+# Returns
+# ggplot containing a scatterplot of portfolios return vs. risk, coloured by sharpe ratio
+plot_sampled_portfolios <- function(portfolios_df, size, alpha){
+  return(
+    portfolios_df %>% 
+      ggplot(aes(x=risk, y=return, col=sharpe_ratio)) +
+      geom_point(size=size, alpha=alpha) +
+      scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
+      ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
+      xlab('Risk') +
+      ylab('Return')
+  )
+}
+# Plot the correlations of stock returns
+# Input
+# daily_returns_df: dataframe containing daily returns for all selected stocks
+# as returned from daily_returns()
+# Returns
+# ggplot containing a heatmap and labels of correlations for each pair of stocks
+plot_stock_return_correlations <- function(daily_returns_df){
+  return(
+    daily_returns_df %>% 
+      cor() %>% 
+      round(2) %>% 
+      as.data.frame() %>% 
+      rownames_to_column('Ticker1') %>% 
+      pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>% 
+      ggplot(aes(x = Ticker1, y = Ticker2, label = cor)) + 
+      geom_tile(aes(fill = cor)) + 
+      scale_fill_gradient(name = 'Correlation') +
+      geom_label() +
+      xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
   )
 }
