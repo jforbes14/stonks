@@ -18,6 +18,10 @@ shinyUI(fluidPage(
 
     # Application title
     titlePanel("STONKS APP"),
+    img(src = "pw.png", height = 250, width = 250, align = "center"),
+    br(),
+    br(),
+    br(),
     
     # # Reset all
     # useShinyjs(),                                           # Include shinyjs in the UI
