@@ -37,6 +37,13 @@ shinyUI(fluidPage(
                 , options = list(create = TRUE, maxItems = 10)
             ),
             
+            # Specify date you want to get data from
+            sliderInput("start_date", h3("Start date for analysis"),
+                        min = as.Date("2015-01-01","%Y-%m-%d"),
+                        max = as.Date("2021-01-01","%Y-%m-%d"),
+                        value=as.Date("2015-01-01"),
+                        timeFormat="%d/%m/%Y"),
+            
             # Specify number of samples for sampling approach
             selectInput("n_samples", h3("Number of samples"), 
                         choices = list("100" = 100, "1000" = 1000,

@@ -35,11 +35,11 @@ add_AX_to_tickers <- function(tickers) {
 # to: date to fetch stock prices up to
 # Returns
 # Data frame of daily adjusted stock price
-get_prices_for_ticker <- function(ticker, from="1900-01-01", to=Sys.Date()) {
+get_prices_for_ticker <- function(ticker, from="2015-01-01", to=Sys.Date()) {
   x <- suppressWarnings(
     getSymbols(ticker,
                     src = 'yahoo',
-                    from="2015-01-01", 
+                    from=from, 
                     to=Sys.Date(),
                     auto.assign = FALSE
     ) %>% as.data.frame()
@@ -57,7 +57,7 @@ get_prices_for_ticker <- function(ticker, from="1900-01-01", to=Sys.Date()) {
 # to: date to fetch stock prices up to
 # Returns
 # Data frame of daily adjusted stock price
-get_prices_for_all_tickers <- function(tickers, from="1900-01-01", to=Sys.Date()) {
+get_prices_for_all_tickers <- function(tickers, from="2015-01-01", to=Sys.Date()) {
   for (ticker in tickers) {
     print(paste("Getting prices for", ticker))
     prc = get_prices_for_ticker(ticker, from, to)

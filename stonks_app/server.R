@@ -33,7 +33,7 @@ shinyServer(function(input, output, session) {
             tickers <- add_AX_to_tickers(input$tickersInput)
 
             # Fetch returns
-            df <- get_prices_for_all_tickers(tickers)
+            df <- get_prices_for_all_tickers(tickers, from=input$start_date)
             daily_df <- daily_returns(df)
 
             # Compute annualised mean array and covariance matrix
