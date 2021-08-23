@@ -1,3 +1,4 @@
+
 #
 # Defining functions for the stonks app
 #
@@ -11,6 +12,29 @@ options("getSymbols.warning4.0"=FALSE)
 # "hello world" text
 hello <- function() {
   return("hello world")
+}
+
+
+asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
+stocks_vect <- as.vector(asx_stocks[[1]])
+asx_etf <- read_csv('data/ETF_data_cleaned.csv')
+etf_vect <- as.vector(asx_etf[[1]])
+codes_vect <- c(stocks_vect, etf_vect)
+
+
+input_validation <- function(stonks_vect=NULL){
+  stonks_vect <- unique(toupper(stonks_vect))
+  stonks_vect <<- stonks_vect
+  for (ticker in stonks_vect) {
+    if (ticker %in% codes_vect == TRUE){
+      print(paste(ticker, 'on the ASX'))
+      stonks_list <- append(stonks_list, ticker)
+    }else{
+      print(paste(ticker, 'not on the ASX'))
+      # break
+    }
+  }
+  return (stonks_list)
 }
 
 # Add .AX prefix to stocks
@@ -38,10 +62,10 @@ add_AX_to_tickers <- function(tickers) {
 get_prices_for_ticker <- function(ticker, from="2015-01-01", to=Sys.Date()) {
   x <- suppressWarnings(
     getSymbols(ticker,
-                    src = 'yahoo',
-                    from=from, 
-                    to=Sys.Date(),
-                    auto.assign = FALSE
+               src = 'yahoo',
+               from=from, 
+               to=Sys.Date(),
+               auto.assign = FALSE
     ) %>% as.data.frame()
   )
   colnames(x) <- c('Open', 'High', 'Low', 'Close', 'Volume', 'Adjusted')
@@ -95,7 +119,7 @@ daily_returns <- function(prices_df) {
     summarise(n = n()) %>%
     filter(n == length(tickers)) %>%
     select(date)
-
+  
   daily_returns <- daily_returns %>%
     filter(date %in% valid_dates$date) %>%
     select(-c(price, return)) %>%

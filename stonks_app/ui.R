@@ -12,6 +12,13 @@ library(shinyjs)
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
+asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
+stocks_vect <- as.vector(asx_stocks[[1]])
+asx_etf <- read_csv('data/ETF_data_cleaned.csv')
+etf_vect <- as.vector(asx_etf[[1]])
+codes_vect <- c(stocks_vect, etf_vect)
+
+
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -36,7 +43,7 @@ shinyUI(fluidPage(
             selectizeInput(
                 "tickersInput"
                 , "Enter tickers for up to 10 stocks (at least 2)"
-                , choices = NULL
+                , choices = codes_vect
                 , multiple = TRUE
                 , options = list(create = TRUE, maxItems = 10)
             ),
@@ -54,14 +61,14 @@ shinyUI(fluidPage(
                                        "1000" = 1000, "10000" = 10000,
                                        "100000" = 100000, "1000000" = 1000000), selected = 1),
             
-            actionButton("go", "Press GO")
+            actionButton("go", "Start the Analysis")
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
             
             # Print tickers
-            h4("You have selected")
+            h4("Stocks in your portfolio")
             , verbatimTextOutput("selected_tickers")
             
             # Display plot of correlations
@@ -77,7 +84,7 @@ shinyUI(fluidPage(
             , tableOutput("analytical_OP")
             
             # Display maximum sharpe ratio
-            , h4("Sampled: Most Optimal Portfolios (max. sharpe ratio)")
+            , h4("Sampled: Most Optimal Portfolios (Maximum Sharpe Ratio)")
             , tableOutput("max_sharpe_ratio_table")
             
             # Display maximum sharpe ratio

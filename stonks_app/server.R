@@ -16,7 +16,7 @@ source("functions.R")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
-
+    
     # # Reset all
     # observeEvent(input$reset_button, {js$reset()})
     
@@ -28,14 +28,20 @@ shinyServer(function(input, output, session) {
             # Data computations
             
             ############################################################################
+            # 
+            # stonks_list <- c()
+            # 
+            stonks <- input_validation(input$tickersInput)
+            
+            print(stonks)
             
             # Add .AX suffix to tickers and order
-            tickers <- add_AX_to_tickers(input$tickersInput)
-
+            tickers <- add_AX_to_tickers(stonks)
+            
             # Fetch returns
             df <- get_prices_for_all_tickers(tickers, from=input$start_date)
             daily_df <- daily_returns(df)
-
+            
             # Compute annualised mean array and covariance matrix
             mr <- mean_returns(daily_df)
             cv <- cov_returns(daily_df)
@@ -53,7 +59,7 @@ shinyServer(function(input, output, session) {
             
             # Annual risk for each sampled split
             sampled_risk <- sampled_splits %>% apply(1, compute_risk, cov_returns=cv)
-
+            
             # Combine sampled portfolios into data frame
             sampled_portfolio_risk_return <- portfolios_summary_df(
                 splits=sampled_splits,
@@ -108,7 +114,7 @@ shinyServer(function(input, output, session) {
                 cat("As string:\n")
                 tickers
             })
-
+            
             # Print out table of all prices header
             output$all_prices_table <- renderTable({
                 req(input$tickersInput)
@@ -122,12 +128,12 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 daily_df %>% summary()
             })
-
+            
             # Print out random number
             output$runif <- renderPrint({
                 runif(1)
             })
-
+            
             # Render table to display the minimum variance portfolio
             output$analytical_MVP <- renderTable({
                 req(input$tickersInput)
