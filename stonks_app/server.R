@@ -51,7 +51,7 @@ shinyServer(function(input, output, session) {
             op <- global_optimal_portfolio(mr, cv)
             
             # Generate samples for portfolio split
-            sampled_splits <- random_splits(tickers, n=as.numeric(input$n_samples))
+            sampled_splits <- random_splits(tickers, n=as.numeric(input$n_samples), thres=as.numeric(input$MaxAllo / 100))
             
             # Annual returns for each sampled split
             a <- sampled_splits %*% mr

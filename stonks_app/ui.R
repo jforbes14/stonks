@@ -61,6 +61,13 @@ shinyUI(fluidPage(
                                        "1000" = 1000, "10000" = 10000,
                                        "100000" = 100000, "1000000" = 1000000), selected = 1),
             
+            sliderInput("MaxAllo", h3("Option to choose a percentage"),
+                        min = 0,
+                        max = 100,
+                        value = 100,
+                        step = 5,
+                        post = "%"),
+            
             actionButton("go", "Start the Analysis")
         ),
 
