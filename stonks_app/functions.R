@@ -22,7 +22,9 @@ etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)
 
 
+
 input_validation <- function(stonks_vect=NULL){
+  stonks_list <- c()
   stonks_vect <- unique(toupper(stonks_vect))
   stonks_vect <<- stonks_vect
   for (ticker in stonks_vect) {
@@ -191,7 +193,7 @@ global_optimal_portfolio <- function(mean_returns, cov_returns, rf=0) {
 # Returns
 # Array of random splits, with n rows and t columns
 
-random_splits <- function(tickers, n=100) {
+random_splits <- function(tickers, n=100, thres = 0.55) {
   random_wts <- matrix(runif(n*length(tickers)), ncol=length(tickers))
   colnames(random_wts) = tickers
   standardised_wts <- random_wts / rowSums(random_wts)
@@ -201,7 +203,17 @@ random_splits <- function(tickers, n=100) {
   out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
     unique()
   
-  return(out)
+  # print(type(out))
+  
+  out1 <- as_tibble(out)
+  
+  checking <- filter_all(out1, all_vars(. < thres))
+  
+  checking <- checking %>% as.matrix()
+  
+  print(checking)
+  
+  return(checking)
 }
 
 
@@ -232,6 +244,7 @@ portfolios_summary_df <- function(splits, returns, risk) {
       bind_cols(splits %>% as.data.frame())
   )
 }
+
 
 # Plot the sampled portfolios with their risk/return
 # Input
