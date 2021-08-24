@@ -22,7 +22,9 @@ etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)
 
 
+
 input_validation <- function(stonks_vect=NULL){
+  stonks_list <- c()
   stonks_vect <- unique(toupper(stonks_vect))
   stonks_vect <<- stonks_vect
   for (ticker in stonks_vect) {

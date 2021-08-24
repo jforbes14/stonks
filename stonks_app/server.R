@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
             # 
             # stonks_list <- c()
             # 
-            stonks <- input_validation(input$tickersInput)
+            stonks <- input_validation(stonks_vect = input$tickersInput)
             
             print(stonks)
             

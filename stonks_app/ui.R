@@ -74,6 +74,9 @@ shinyUI(fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
             
+            
+            
+            
             # Print tickers
             h4("Stocks in your portfolio")
             , verbatimTextOutput("selected_tickers")
