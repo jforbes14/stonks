@@ -246,7 +246,70 @@ portfolios_summary_df <- function(splits, returns, risk) {
 }
 
 
-# Plot the sampled portfolios with their risk/return
+
+# Summarise the sampled portfolios into increments that trace the efficient frontier
+# Input
+# risk: a vector of risk values
+# n_increments: number of desired increments along the efficient frontier
+# Returns
+# Corresponding increments for the risk values vector
+round_risk_into_increments <- function(risk, n_increments = 100) {
+  # Calculate risk increment size
+  min_risk <- min(risk) %>% signif(2)
+  max_risk <- max(risk) %>% signif(2)
+  incr <- (max_risk - min_risk)/n_increments %>% signif(3)
+  
+  # Get increments
+  risk_increments <- seq(from = min_risk, to = max_risk, by = incr)
+  
+  # Assign risk values to nearest increment
+  nearest_increment = function(x, values) {
+    return(values[which.min(abs(values - x))])
+  }
+  risk_nearest_increment <- risk %>% sapply(
+    FUN = nearest_increment,
+    values = risk_increments
+  )
+  
+  return(risk_nearest_increment)
+}
+
+
+
+# Plot the efficient frontier, with sampled portfolios along it
+# Input
+# portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
+# as returned from portfolios_summary_df()
+# Returns
+# ggplot containing a path for the efficient frontier plus point representing the
+# portfolios along it
+plot_efficient_frontier <- function(portfolios_df, size, alpha){
+  
+  # Get risk increments
+  portfolios_df$risk_increments <- round_risk_into_increments(portfolios_df$risk, n_increments = 25)
+  
+  # Plot the efficient frontier
+  p <- portfolios_df %>% 
+    group_by(risk_increments) %>%
+    filter(sharpe_ratio == max(sharpe_ratio)) %>% 
+    ungroup() %>% 
+    mutate(optimal_portfolio = sharpe_ratio == max(sharpe_ratio)) %>%
+    arrange(-sharpe_ratio) %>%  
+    ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio)) +
+    geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
+    geom_path() +
+    scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
+    scale_shape_manual(values = c(1, 19)) +
+    ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
+    xlab('Risk') +
+    ylab('Return')
+  
+  
+  return(p)
+}
+
+
+# Plot all sampled portfolios with their risk/return
 # Input
 # portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
 # as returned from portfolios_summary_df()
@@ -263,6 +326,8 @@ plot_sampled_portfolios <- function(portfolios_df, size, alpha){
       ylab('Return')
   )
 }
+
+
 # Plot the correlations of stock returns
 # Input
 # daily_returns_df: dataframe containing daily returns for all selected stocks

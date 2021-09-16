@@ -76,10 +76,10 @@ shinyServer(function(input, output, session) {
             # Graph showing risk, return and sharpe ratio for each portfolio
             output$portfolio_plot <- renderPlot({
                 req(input$tickersInput)
-                plot_sampled_portfolios(
-                    portfolios_df = sampled_portfolio_risk_return,
-                    size = 1,
-                    alpha = 1
+                plot_efficient_frontier(
+                        portfolios_df = sampled_portfolio_risk_return,
+                        size = 2,
+                        alpha = 1
                 )
             })
             
