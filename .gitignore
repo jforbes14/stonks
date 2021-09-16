@@ -1,2 +1,6 @@
 .Rproj.user
 ~$stonks_app.pptx
+.DS_Store
+.RData
+.Rhistory
+stonks/getting_up_to_speed.R
