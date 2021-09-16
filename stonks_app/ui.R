@@ -146,6 +146,8 @@ shinyUI(fluidPage(
             <br>
             * change colour scheme, clearly
             <br>
+            * explain why its a sampled portfolio, not analytical
+            <br>
         
             </p>
             </body>
