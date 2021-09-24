@@ -203,15 +203,11 @@ random_splits <- function(tickers, n=100, thres = 0.55) {
   out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
     unique()
   
-  # print(type(out))
-  
   out1 <- as_tibble(out)
   
   checking <- filter_all(out1, all_vars(. < thres))
   
   checking <- checking %>% as.matrix()
-  
-  print(checking)
   
   return(checking)
 }

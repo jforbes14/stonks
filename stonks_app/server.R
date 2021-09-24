@@ -33,8 +33,6 @@ shinyServer(function(input, output, session) {
             # 
             stonks <- input_validation(stonks_vect = input$tickersInput)
             
-            print(stonks)
-            
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(stonks)
             
@@ -111,7 +109,6 @@ shinyServer(function(input, output, session) {
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({
                 req(input$tickersInput)
-                cat("As string:\n")
                 tickers
             })
             
