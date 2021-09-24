@@ -349,19 +349,18 @@ plot_sampled_portfolios <- function(portfolios_df, size, alpha){
 # Returns
 # ggplot containing a heatmap and labels of correlations for each pair of stocks
 plot_stock_return_correlations <- function(daily_returns_df){
-  return(
-    daily_returns_df %>% 
-      cor() %>% 
-      round(2) %>% 
-      as.data.frame() %>% 
-      rownames_to_column('Ticker1') %>% 
-      pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>%
-      mutate(Ticker1 = str_replace(Ticker1, pattern = ".AX", replace = ""),
-             Ticker2 = str_replace(Ticker2, pattern = ".AX", replace = "")) %>% 
-      ggplot(aes(x = Ticker1, y = Ticker2, label = cor)) + 
-      geom_tile(aes(fill = cor)) + 
-      scale_fill_gradient(name = 'Correlation') +
-      geom_label() +
-      xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
-  )
+  p <- daily_returns_df %>% 
+    cor() %>% 
+    round(2) %>% 
+    as.data.frame() %>% 
+    rownames_to_column('Ticker1') %>% 
+    pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>%
+    mutate(Ticker1 = str_replace(Ticker1, pattern = ".AX", replace = ""),
+           Ticker2 = str_replace(Ticker2, pattern = ".AX", replace = "")) %>% 
+    ggplot(aes(x = Ticker1, y = Ticker2, label = cor)) + 
+    geom_tile(aes(fill = cor)) + 
+    scale_fill_gradient(name = 'Correlation') +
+    geom_label() +
+    xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
+  return(p)
 }
