@@ -74,7 +74,7 @@ shinyServer(function(input, output, session) {
             ############################################################################
             
             # Graph showing risk, return and sharpe ratio for each portfolio
-            output$portfolio_plot <- renderPlot({
+            output$portfolio_plot <- renderPlotly({
                 req(input$tickersInput)
                 plot_efficient_frontier(
                         portfolios_df = sampled_portfolio_risk_return,
@@ -97,7 +97,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(desc(sharpe_ratio)) %>%
-                    head()
+                    head(1)
             }, digits = 4)
             
             # Table showing top values with minimum risk
@@ -105,7 +105,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
-                    head()
+                    head(1)
             }, digits = 4)
             
             # Print out the selected tickers

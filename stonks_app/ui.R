@@ -181,7 +181,7 @@ shinyUI(fluidPage(
             
             # Display plot of portfolios
             , h4("Sampled: Portfolio Risk, Return and Sharpe Ratio")
-            , plotOutput("portfolio_plot")
+            , plotlyOutput("portfolio_plot")
             
             , h4("Random number")
             , verbatimTextOutput("runif")
