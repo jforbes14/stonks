@@ -281,23 +281,23 @@ round_risk_into_increments <- function(risk, n_increments = 100) {
 # portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
 # as returned from portfolios_summary_df()
 # Returns
-# ggplot containing a path for the efficient frontier plus point representing the
-# portfolios along it
+# ggplot containing points that trace the efficient frontier
 plot_efficient_frontier <- function(portfolios_df, size, alpha){
   
   # Get risk increments
   portfolios_df$risk_increments <- round_risk_into_increments(portfolios_df$risk, n_increments = 25)
   
   # Plot the efficient frontier
+  save(portfolios_df, file = "portfolios_df.Rda")
   p <- portfolios_df %>% 
     group_by(risk_increments) %>%
     filter(sharpe_ratio == max(sharpe_ratio)) %>% 
     ungroup() %>% 
     mutate(optimal_portfolio = sharpe_ratio == max(sharpe_ratio)) %>%
-    arrange(-sharpe_ratio) %>%  
+    arrange(-return) %>%  
     ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio)) +
     geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
-    geom_path() +
+    # geom_path() +
     scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
     scale_shape_manual(values = c(1, 19)) +
     ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
