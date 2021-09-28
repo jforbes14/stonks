@@ -285,9 +285,6 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     portfolios_df$risk, n_increments = 25
     )
   
-  # Plot the efficient frontier
-  save(portfolios_df, file = "portfolios_df.Rda")
-  
   # Create plot data
   plot_data <- portfolios_df %>% 
     group_by(risk_increments) %>%
