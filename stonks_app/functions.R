@@ -308,6 +308,7 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
   
   # Plot
   p <- plot_data %>%
+    mutate(optimal_portfolio = ifelse(optimal_portfolio, "Optimal", "Not optimal")) %>% 
     ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio, label = split)) +
     geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
     # geom_path() +
@@ -315,10 +316,15 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     scale_shape_manual(values = c(1, 19), name = 'Optimal portfolio') +
     ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
     xlab('Risk') +
-    ylab('Return')
+    ylab('Return') +
+    guides(shape = "none")
   
   # Make plotly
-  p_plotly <- ggplotly(p, tooltip = c("split"))
+  p_plotly <- ggplotly(p, tooltip = c("split")) %>% 
+    layout(
+      xaxis = list(fixedrange=TRUE),
+      yaxis = list(fixedrange=TRUE)
+    )
   return(p_plotly)
 }
 
