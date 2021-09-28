@@ -203,15 +203,11 @@ random_splits <- function(tickers, n=100, thres = 0.55) {
   out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
     unique()
   
-  # print(type(out))
-  
   out1 <- as_tibble(out)
   
   checking <- filter_all(out1, all_vars(. < thres))
   
   checking <- checking %>% as.matrix()
-  
-  print(checking)
   
   return(checking)
 }
@@ -246,7 +242,91 @@ portfolios_summary_df <- function(splits, returns, risk) {
 }
 
 
-# Plot the sampled portfolios with their risk/return
+
+# Summarise the sampled portfolios into increments that trace the efficient frontier
+# Input
+# risk: a vector of risk values
+# n_increments: number of desired increments along the efficient frontier
+# Returns
+# Corresponding increments for the risk values vector
+round_risk_into_increments <- function(risk, n_increments = 100) {
+  # Calculate risk increment size
+  min_risk <- min(risk) %>% signif(2)
+  max_risk <- max(risk) %>% signif(2)
+  incr <- (max_risk - min_risk)/n_increments %>% signif(3)
+  
+  # Get increments
+  risk_increments <- seq(from = min_risk, to = max_risk, by = incr)
+  
+  # Assign risk values to nearest increment
+  nearest_increment = function(x, values) {
+    return(values[which.min(abs(values - x))])
+  }
+  risk_nearest_increment <- risk %>% sapply(
+    FUN = nearest_increment,
+    values = risk_increments
+  )
+  
+  return(risk_nearest_increment)
+}
+
+
+
+# Plotly plot of the efficient frontier, with sampled portfolios along it
+# Input
+# portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
+# as returned from portfolios_summary_df()
+# Returns
+# ggplot containing points that trace the efficient frontier
+plot_efficient_frontier <- function(portfolios_df, size, alpha){
+  
+  # Get risk increments
+  portfolios_df$risk_increments <- round_risk_into_increments(
+    portfolios_df$risk, n_increments = 25
+    )
+  
+  # Create plot data
+  plot_data <- portfolios_df %>% 
+    group_by(risk_increments) %>%
+    filter(sharpe_ratio == max(sharpe_ratio)) %>%
+    ungroup() %>%
+    mutate(optimal_portfolio = sharpe_ratio == max(sharpe_ratio)) %>%
+    arrange(-return)
+  
+  # Isolate the stock splits
+  stocks_splits <- plot_data %>% 
+    select(ends_with('.AX'))
+  names(stocks_splits) <- gsub('.AX', '', names(stocks_splits))
+  stocks_splits[] <- Map(paste, names(stocks_splits), stocks_splits, sep = ':')
+  plot_data$split <- paste(
+    "</br></br>", 
+    apply(stocks_splits, 1, paste, collapse = " </br> ")
+    )
+  
+  # Plot
+  p <- plot_data %>%
+    mutate(optimal_portfolio = ifelse(optimal_portfolio, "Optimal", "Not optimal")) %>% 
+    ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio, label = split)) +
+    geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
+    # geom_path() +
+    scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
+    scale_shape_manual(values = c(1, 19), name = 'Optimal portfolio') +
+    ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
+    xlab('Risk') +
+    ylab('Return') +
+    guides(shape = "none")
+  
+  # Make plotly
+  p_plotly <- ggplotly(p, tooltip = c("split")) %>% 
+    layout(
+      xaxis = list(fixedrange=TRUE),
+      yaxis = list(fixedrange=TRUE)
+    )
+  return(p_plotly)
+}
+
+
+# Plot all sampled portfolios with their risk/return
 # Input
 # portfolios_df: dataframe containing each portfolios return, risk and sharpe ratio,
 # as returned from portfolios_summary_df()
@@ -263,6 +343,8 @@ plot_sampled_portfolios <- function(portfolios_df, size, alpha){
       ylab('Return')
   )
 }
+
+
 # Plot the correlations of stock returns
 # Input
 # daily_returns_df: dataframe containing daily returns for all selected stocks
@@ -270,17 +352,18 @@ plot_sampled_portfolios <- function(portfolios_df, size, alpha){
 # Returns
 # ggplot containing a heatmap and labels of correlations for each pair of stocks
 plot_stock_return_correlations <- function(daily_returns_df){
-  return(
-    daily_returns_df %>% 
-      cor() %>% 
-      round(2) %>% 
-      as.data.frame() %>% 
-      rownames_to_column('Ticker1') %>% 
-      pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>% 
-      ggplot(aes(x = Ticker1, y = Ticker2, label = cor)) + 
-      geom_tile(aes(fill = cor)) + 
-      scale_fill_gradient(name = 'Correlation') +
-      geom_label() +
-      xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
-  )
+  p <- daily_returns_df %>% 
+    cor() %>% 
+    round(2) %>% 
+    as.data.frame() %>% 
+    rownames_to_column('Ticker1') %>% 
+    pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>%
+    mutate(Ticker1 = str_replace(Ticker1, pattern = ".AX", replace = ""),
+           Ticker2 = str_replace(Ticker2, pattern = ".AX", replace = "")) %>% 
+    ggplot(aes(x = reorder(Ticker1, desc(Ticker1)), y = Ticker2, label = cor)) + 
+    geom_tile(aes(fill = cor)) + 
+    scale_fill_gradient(name = 'Correlation') +
+    geom_label() +
+    xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
+  return(p)
 }

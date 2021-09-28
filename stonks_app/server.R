@@ -33,8 +33,6 @@ shinyServer(function(input, output, session) {
             # 
             stonks <- input_validation(stonks_vect = input$tickersInput)
             
-            print(stonks)
-            
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(stonks)
             
@@ -74,12 +72,12 @@ shinyServer(function(input, output, session) {
             ############################################################################
             
             # Graph showing risk, return and sharpe ratio for each portfolio
-            output$portfolio_plot <- renderPlot({
+            output$portfolio_plot <- renderPlotly({
                 req(input$tickersInput)
-                plot_sampled_portfolios(
-                    portfolios_df = sampled_portfolio_risk_return,
-                    size = 1,
-                    alpha = 1
+                plot_efficient_frontier(
+                        portfolios_df = sampled_portfolio_risk_return,
+                        size = 2,
+                        alpha = 1
                 )
             })
             
@@ -97,7 +95,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(desc(sharpe_ratio)) %>%
-                    head()
+                    head(1)
             }, digits = 4)
             
             # Table showing top values with minimum risk
@@ -105,13 +103,12 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
-                    head()
+                    head(1)
             }, digits = 4)
             
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({
                 req(input$tickersInput)
-                cat("As string:\n")
                 tickers
             })
             

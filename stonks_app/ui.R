@@ -9,6 +9,7 @@
 
 library(shiny)
 library(shinyjs)
+library(tidyverse)
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
@@ -171,16 +172,16 @@ shinyUI(fluidPage(
             , tableOutput("analytical_OP")
             
             # Display maximum sharpe ratio
-            , h4("Sampled: Most Optimal Portfolios (Maximum Sharpe Ratio)")
+            , h4("Sampled: Optimal Portfolio (Maximum Sharpe Ratio)")
             , tableOutput("max_sharpe_ratio_table")
             
             # Display maximum sharpe ratio
-            , h4("Sampled: Minimum Variance Portfolios")
+            , h4("Sampled: Minimum Variance Portfolio")
             , tableOutput("min_risk_table")
             
             # Display plot of portfolios
             , h4("Sampled: Portfolio Risk, Return and Sharpe Ratio")
-            , plotOutput("portfolio_plot")
+            , plotlyOutput("portfolio_plot")
             
             , h4("Random number")
             , verbatimTextOutput("runif")
