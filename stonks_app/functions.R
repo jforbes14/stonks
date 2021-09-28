@@ -357,7 +357,7 @@ plot_stock_return_correlations <- function(daily_returns_df){
     pivot_longer(cols = ends_with('.AX'), names_to = 'Ticker2', values_to = 'cor') %>%
     mutate(Ticker1 = str_replace(Ticker1, pattern = ".AX", replace = ""),
            Ticker2 = str_replace(Ticker2, pattern = ".AX", replace = "")) %>% 
-    ggplot(aes(x = Ticker1, y = Ticker2, label = cor)) + 
+    ggplot(aes(x = reorder(Ticker1, desc(Ticker1)), y = Ticker2, label = cor)) + 
     geom_tile(aes(fill = cor)) + 
     scale_fill_gradient(name = 'Correlation') +
     geom_label() +
