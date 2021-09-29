@@ -78,16 +78,16 @@ shinyUI(fluidPage(
             <html>
             <head>
             <style>
-            h1 {color:#006080;
-                background-color: #1ac6ff;
-                padding: 5px;
-                border: 1px solid black;
-                font-family:var(--chalet-book);}
-            p {color:black;
+            h1 {
+                font-family: Gill Sans, sans-serif);
+            }
+            p {
+                color:black;
                background-color: white;
                padding: 5px;
                border: 1px solid black;
-               font-family:Tahoma;}
+               font-family: Gill Sans, sans-serif;
+            }
             </style>
             </head>
             <body>
@@ -100,26 +100,34 @@ shinyUI(fluidPage(
                  
             <p>
             The Stonks App, is a purpose-built web-app created to help you optimise your portfolio allocation. Investing for
-            the first time is tricky, the investment landscape can seem fragmented and answers are often hard to find. What we're aiming for
-            is to show you how you can optimse the structure of your portfolio by implementing a method established in 1952, and coined
+            the first time is tricky, the investment landscape can seem fragmented and answers are often hard to find. We've all been there,
+            your best friends' uncle went to school with someone who was tipped off about a stock that's going to explode. You want to invest before 
+            it's too late, but you also know that it's not totally responsible to allocate all your hard earned money into it, so you want to balance it out with
+            some other stable more stable investments. So right now, you've got the assets in mind, but how do you know how much money to allocate to each? Well,
+            fortunately, we want to help you, and we want to start by introducing you to the
+    
+             <a href='https://www.morningstar.com.au/learn/article/investing-bWes-modern-portfolio-theory-expl/204228'>Modern Portfolio Theory</a>. 
             
-            <a href='https://www.morningstar.com.au/learn/article/investing-basics-modern-portfolio-theory-expl/204228'>Modern Portfolio Theory</a>. 
-            
-            <br>
-            <br>
-            
-            When we talk about a portfolio, typically we're referring to the combination of two or more assets and in this instance those two or more assets
-            are stocks. Analysing a portfolio is complicated business, and while the behaviour of stocks may seem similar it is important to establish
-            the relationship that stocks have with eachother. Establishing the level of the interaction between the assets is key to figuring out
-            the optimal structure of the portfolio. Fortunately however, we've done all this pesky work for you and you don't have to worry about the complicated 
-            math because that's all done behind the scenes. 
+            A method of structuring your portfolio by optimising it for the highest return-risk trade off. We offer some recommended reading above
+            to help you understand the nuances of this approach, but we will delve into some of the details below.
             
             <br>
             <br>
             
-            A significant note to make is that this analysis is backwards looking, in that, establishing the optimal portfolio is done by observing the risk, 
+            When we talk about a portfolio, typically we're referring to the combination of two or more assets. In this instance those assets are stocks. 
+            Analysing a portfolio is complicated business, and while the profile of stocks may seem homogenous it is important to understand
+            the level of interplay between these assets differ and are key to establshing the optimal structure of the portfolio. This may all seem like a bunch of
+            words on a page, but there are many inputs required into identifying the optimal portfolio in accordance with the Modern Portfolio Theory
+            described above. Don't fret however, we'll do all the hard-work, but understanding the basis of the recommendation is always a good start!
+            
+            <br>
+            <br>
+            
+            Before the analysis kicks off, a few points of discussion are noted. The first being that this analysis is backwards looking, in that, establishing the optimal portfolio is done by observing the risk, 
             return and covariance of the assets over the last <strong> n </strong> years. What may be the optimal portfolio now might be different to the optimal 
-            portfolio (of the same assets) in a year.
+            portfolio (of the same assets) in a year. The second quandary is such that the optimal portfolio presented is identified through a method of sampling. This is different
+            to what is considered an analytical outcome. This is because, in some circumstances, the analytical approach will conclude a portfolio, consisting of negatively weighted
+            assets is the optimal one, and whilst this is possible in practice, through shorting, it is not practical for most investors.
             
             <br>
             <br>
@@ -132,22 +140,19 @@ shinyUI(fluidPage(
             
             <br>
             <br>
-            
-            <strong> OTHER NOTES </strong>
-            
             <br>
             <br>
             
-            * disclaimer?
+            The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner.
+            We are not financial advisors. You should consider seeking independent legal, financial, taxation or other advice to check how the website information relates to your unique circumstances.
+            We are not liable for any loss caused, whether due to negligence or otherwise arising from the use of, or reliance on, the information provided directly or 
+            indirectly, by use of this website. The tools on this website are provided for your information and to illustrate scenarios. The results should not be taken as a substitute for professional advice. 
+            All reasonable care has been taken in preparing and designing the calculators and tools; however, We provides no warranties and makes no representation that the 
+            information provided by tools is appropriate for your particular circumstances or indicates you should follow a particular course of action.
+            
             <br>
-            * confirm the attached link is appropriate reading
             <br>
-            * try align the title to the top of the user input panel
-            <br>
-            * change colour scheme, clearly
-            <br>
-            * explain why its a sampled portfolio, not analytical
-            <br>
+            
         
             </p>
             </body>
