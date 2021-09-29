@@ -26,7 +26,10 @@ shinyUI(fluidPage(
     
 
     # Application title
-    titlePanel("STONKS APP"),
+    titlePanel
+    (
+        h1("STONKS APP", align = "center")
+    ),
     # img(src = "pw.png", height = 250, width = 250, align = "center"),
     br(),
     
@@ -91,12 +94,6 @@ shinyUI(fluidPage(
             </style>
             </head>
             <body>
-                    
-            <h1>
-            How it works
-            </h1>
-            
-            <br>
                  
             <p>
             The Stonks App, is a purpose-built web-app created to help you optimise your portfolio allocation. Investing for
@@ -139,20 +136,6 @@ shinyUI(fluidPage(
             more than 70%, even if the optimal portfolio suggests so.
             
             <br>
-            <br>
-            <br>
-            <br>
-            
-            The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner.
-            We are not financial advisors. You should consider seeking independent legal, financial, taxation or other advice to check how the website information relates to your unique circumstances.
-            We are not liable for any loss caused, whether due to negligence or otherwise arising from the use of, or reliance on, the information provided directly or 
-            indirectly, by use of this website. The tools on this website are provided for your information and to illustrate scenarios. The results should not be taken as a substitute for professional advice. 
-            All reasonable care has been taken in preparing and designing the calculators and tools; however, We provides no warranties and makes no representation that the 
-            information provided by tools is appropriate for your particular circumstances or indicates you should follow a particular course of action.
-            
-            <br>
-            <br>
-            
         
             </p>
             </body>
@@ -189,6 +172,17 @@ shinyUI(fluidPage(
             
             , h4("Random number")
             , verbatimTextOutput("runif")
+            
+            , hr()
+            , print
+            (
+            "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner.
+            We are not financial advisors. You should consider seeking independent legal, financial, taxation or other advice to check how the website information relates to your unique circumstances.
+            We are not liable for any loss caused, whether due to negligence or otherwise arising from the use of, or reliance on, the information provided directly or 
+            indirectly, by use of this website. The tools on this website are provided for your information and to illustrate scenarios. The results should not be taken as a substitute for professional advice. 
+            All reasonable care has been taken in preparing and designing the calculators and tools; however, We provides no warranties and makes no representation that the 
+            information provided by tools is appropriate for your particular circumstances or indicates you should follow a particular course of action."
+            )
         )
     )
 ))
