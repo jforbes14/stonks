@@ -10,6 +10,7 @@
 library(shiny)
 library(shinyjs)
 library(tidyverse)
+library(plotly)
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
