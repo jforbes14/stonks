@@ -362,8 +362,21 @@ plot_stock_return_correlations <- function(daily_returns_df){
            Ticker2 = str_replace(Ticker2, pattern = ".AX", replace = "")) %>% 
     ggplot(aes(x = reorder(Ticker1, desc(Ticker1)), y = Ticker2, label = cor)) + 
     geom_tile(aes(fill = cor)) + 
-    scale_fill_gradient(name = 'Correlation') +
+    scale_fill_gradient2(
+      name = 'Correlation',
+      low = "orange",
+      mid = "white",
+      high = "purple",
+      midpoint = 0,
+      space = "Lab",
+      na.value = "grey50",
+      guide = "colourbar",
+      aesthetics = "fill"
+    ) +
     geom_label() +
-    xlab('Ticker') + ylab('Ticker') + ggtitle('Correlations between stocks')
+    xlab('Ticker') + 
+    ylab('Ticker') + 
+    ggtitle('Correlations between stocks') +
+    theme(text = element_text(size = 16))
   return(p)
 }
