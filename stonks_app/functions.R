@@ -4,6 +4,7 @@
 #
 library(tidyquant)
 library(tidyverse)
+rdirichlet <- MCMCpack::rdirichlet
 options("getSymbols.warning4.0"=FALSE)
 
 # Test function
@@ -187,31 +188,28 @@ global_optimal_portfolio <- function(mean_returns, cov_returns, rf=0) {
 }
 
 # Generate random portfolio splits for the tickers entered
+# sampling from dirichlet distribution
 # Input
 # tickers: vector of ASX tickers, of length t
 # n: number of random splits to generate
+# thres: maximum weight for any ticker
 # Returns
 # Array of random splits, with n rows and t columns
-
 random_splits <- function(tickers, n=100, thres = 0.55) {
-  random_wts <- matrix(runif(n*length(tickers)), ncol=length(tickers))
+  random_wts <- MCMCpack::rdirichlet(n=n, rep(1, length(tickers)))
   colnames(random_wts) = tickers
-  standardised_wts <- random_wts / rowSums(random_wts)
-  rounded_wts <- round(standardised_wts, 2)
-  
-  # Discard any that don't add to 1 exactly
-  out <- rounded_wts[rowSums(rounded_wts) == 1,] %>% 
-    unique()
-  
-  out1 <- as_tibble(out)
-  
-  checking <- filter_all(out1, all_vars(. < thres))
-  
-  checking <- checking %>% as.matrix()
-  
-  return(checking)
-}
+  rounded_wts <- round(random_wts, 2)
 
+  # Discard any that don't add to 1 exactly
+  out <- rounded_wts[rowSums(rounded_wts) == 1,] %>%
+    unique() %>% 
+    as_tibble()
+
+  in_thres <- filter_all(out, all_vars(. < thres)) %>% 
+    as.matrix()
+
+  return(in_thres)
+}
 
 # Compute risk values for a candidate portfolio (sd of returns) 
 # Input
