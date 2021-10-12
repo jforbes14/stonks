@@ -36,49 +36,51 @@ dashboardPage(
     dashboardBody(
         fluidRow(
             column(width = 3,
-                   box(width = NULL, status = "warning",
-                       uiOutput("routeSelect"),
-                       checkboxGroupInput("directions", "Show",
-                                          choices = c(
-                                              Northbound = 4,
-                                              Southbound = 1,
-                                              Eastbound = 2,
-                                              Westbound = 3
-                                          ),
-                                          selected = c(1, 2, 3, 4)
-                       ),
-                       p(
-                           class = "text-muted",
-                           paste("Note: a route number can have several different trips, each",
-                                 "with a different path. Only the most commonly-used path will",
-                                 "be displayed on the map."
-                           )
-                       ),
-                       actionButton("zoomButton", "Zoom to fit buses")
-                   ),
-                   box(width = NULL, status = "warning",
-                       selectInput("interval", "Refresh interval",
-                                   choices = c(
-                                       "30 seconds" = 30,
-                                       "1 minute" = 60,
-                                       "2 minutes" = 120,
-                                       "5 minutes" = 300,
-                                       "10 minutes" = 600
-                                   ),
-                                   selected = "60"
-                       ),
-                       uiOutput("timeSinceLastUpdate"),
-                       actionButton("refresh", "Refresh now"),
-                       p(class = "text-muted",
-                         br(),
-                         "Source data updates every 30 seconds."
+                   box(
+                       width = NULL,
+                       status = "warning",
+                       # Selectize tickers
+                       selectizeInput(
+                           "tickersInput",
+                           "Enter tickers for up to 10 stocks (at least 2)",
+                           choices = codes_vect,
+                           multiple = TRUE,
+                           options = list(create = TRUE, maxItems = 10)
+                           ),
+                       # Maximum percentage for any one stock
+                       sliderInput(
+                           "MaxAllo",
+                           "Enter a maximum percentage for any one stock",
+                           min = 0,
+                           max = 100,
+                           value = 100,
+                           step = 5,
+                           post = "%"
+                           ),
+                       # Specify number of samples for sampling approach
+                       selectInput(
+                           "n_samples",
+                           "Select the number of portfolio samples",
+                           choices = list(
+                               "100" = 100, "1000" = 1000, "1000" = 1000, 
+                               "10000" = 10000,"100000" = 100000, "1000000" = 1000000
+                               ),
+                           selected = 1
+                           ),
+                       # # Specify date you want to get data from
+                       # sliderInput("start_date", h3("Start date for analysis"),
+                       #             min = as.Date("2015-01-01","%Y-%m-%d"),
+                       #             max = as.Date("2021-01-01","%Y-%m-%d"),
+                       #             value=as.Date("2015-01-01"),
+                       #             timeFormat="%d/%m/%Y"),
+                       actionButton("go", "Start the Analysis")
                        )
-                   )
-            ),
-            column(width = 9,
-                   box(width = NULL, title = "Intro"),
-                   box(width = NULL)
-            )
+                   ),
+            column(
+                width = 9,
+                box(width = NULL, title = "Intro"),
+                box(width = NULL)
+                )
         )
     )
 )
