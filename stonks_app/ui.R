@@ -21,6 +21,7 @@ asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)
 
+disclaimer_string <- "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
 
 # Define UI for application that draws a histogram
@@ -74,13 +75,42 @@ dashboardPage(
                        #             value=as.Date("2015-01-01"),
                        #             timeFormat="%d/%m/%Y"),
                        actionButton("go", "Start the Analysis")
+                       ),
+                   box(width = NULL, title = "Disclaimer",
+                       p(
+                           class = "text-muted",
+                           disclaimer_string
                        )
+                       ),
                    ),
-            column(
-                width = 9,
-                box(width = NULL, title = "Intro"),
-                box(width = NULL)
-                )
+            column(width = 9,
+                   # RHS
+                   fluidRow(
+                       # intro
+                       box(width = NULL, title = "Intro"),
+                       # annual stock returns
+                       box(width = NULL, title = "Annual returns on selected stocks"),
+                       # split column: tables and efficient frontier
+                       fluidRow(
+                           column(width = 6,
+                                  box(width = NULL, title = "Optimal portfolio"),
+                                  box(width = NULL, title = "Minimum variance portfolio")
+                                  ),
+                           column(width = 6,
+                                  box(width = NULL, title = "Efficient frontier")
+                                  )
+                           ),
+                       # price plot and correlation matrix
+                       fluidRow(
+                           column(width = 6,
+                                  box(width = NULL, title = "Price plot")
+                           ),
+                           column(width = 6,
+                                  box(width = NULL, title = "Correlation matrix")
+                           )
+                       )
+                   )
+            )
         )
     )
 )
