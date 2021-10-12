@@ -24,16 +24,15 @@ codes_vect <- c(stocks_vect, etf_vect)
 
 disclaimer_string <- "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
-
 # Define UI for application that draws a histogram
 dashboardPage(
     dashboardHeader(title = "Stonks"),
-    
+
     # Sidebar
     dashboardSidebar(
         disable = TRUE
     ),
-    
+
     # Tabs
     dashboardBody(
         fluidRow(
@@ -48,7 +47,7 @@ dashboardPage(
                            choices = codes_vect,
                            multiple = TRUE,
                            options = list(create = TRUE, maxItems = 10)
-                           ),
+                       ),
                        # Maximum percentage for any one stock
                        sliderInput(
                            "MaxAllo",
@@ -58,78 +57,74 @@ dashboardPage(
                            value = 100,
                            step = 5,
                            post = "%"
-                           ),
+                       ),
                        # Specify number of samples for sampling approach
                        selectInput(
                            "n_samples",
                            "Select the number of portfolio samples",
                            choices = list(
-                               "100" = 100, "1000" = 1000, "1000" = 1000, 
+                               "100" = 100, "1000" = 1000, "1000" = 1000,
                                "10000" = 10000,"100000" = 100000, "1000000" = 1000000
-                               ),
-                           selected = 1
                            ),
-                       # # Specify date you want to get data from
-                       # sliderInput("start_date", h3("Start date for analysis"),
-                       #             min = as.Date("2015-01-01","%Y-%m-%d"),
-                       #             max = as.Date("2021-01-01","%Y-%m-%d"),
-                       #             value=as.Date("2015-01-01"),
-                       #             timeFormat="%d/%m/%Y"),
-                       actionButton("go", "Start the Analysis")
+                           selected = 1
                        ),
+                       # Specify date you want to get data from
+                       sliderInput("start_date", h3("Start date for analysis"),
+                                   min = as.Date("2015-01-01","%Y-%m-%d"),
+                                   max = as.Date("2021-01-01","%Y-%m-%d"),
+                                   value=as.Date("2015-01-01"),
+                                   timeFormat="%d/%m/%Y"),
+                       actionButton("go", "Start the Analysis")
+                   ),
                    box(width = NULL, title = "Disclaimer",
                        p(
                            class = "text-muted",
                            disclaimer_string
                            )
-                       )
-                   ),
+                   )
+            ),
             column(width = 9,
                    # RHS
                    fluidRow(
                        # intro
                        box(width = NULL, title = "Intro"),
                        # annual stock returns
-                       box(width = NULL, title = "Annual returns on selected stocks"
-                           # ,
-                           # verbatimTextOutput("selected_tickers")
-                           ),
+                       box(width = NULL, title = "Annual returns on selected stocks",
+                           verbatimTextOutput("selected_tickers")
+                       ),
                        # split column: tables and efficient frontier
                        fluidRow(
                            column(width = 6,
-                                  box(width = NULL, title = "Optimal portfolio"
-                                      # ,
-                                      # tableOutput("max_sharpe_ratio_table")
-                                      ),
-                                  box(width = NULL, title = "Minimum variance portfolio"
-                                      # ,
-                                      # tableOutput("min_risk_table")
-                                      ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Efficient frontier"
-                                      # ,
-                                      # plotlyOutput("portfolio_plot")
-                                      )
+                                  box(width = NULL, title = "Optimal portfolio",
+                                      tableOutput("max_sharpe_ratio_table")
+                                  ),
+                                  box(width = NULL, title = "Minimum variance portfolio",
+                                      tableOutput("min_risk_table")
+                                  ),
+                                  column(width = 6,
+                                         box(width = NULL, title = "Efficient frontier",
+                                             plotlyOutput("portfolio_plot")
+                                         )
                                   )
                            ),
-                       # price plot and correlation matrix
-                       fluidRow(
-                           column(width = 6,
-                                  box(width = NULL, title = "Price plot")
-                           ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Correlation matrix"
-                                      # ,
-                                      # plotOutput("correlation_plot")
+                           # price plot and correlation matrix
+                           fluidRow(
+                               column(width = 6,
+                                      box(width = NULL, title = "Price plot")
+                               ),
+                               column(width = 6,
+                                      box(width = NULL, title = "Correlation matrix",
+                                          plotOutput("correlation_plot")
                                       )
+                               )
                            )
-                       )
                        )
                    )
             )
         )
     )
 )
+
 # shinyUI(
 #     fluidPage(
 #     
