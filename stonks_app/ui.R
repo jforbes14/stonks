@@ -12,6 +12,7 @@ library(shinyjs)
 library(tidyverse)
 library(plotly)
 library(shinydashboard)
+source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
@@ -80,8 +81,8 @@ dashboardPage(
                        p(
                            class = "text-muted",
                            disclaimer_string
+                           )
                        )
-                       ),
                    ),
             column(width = 9,
                    # RHS
@@ -89,15 +90,26 @@ dashboardPage(
                        # intro
                        box(width = NULL, title = "Intro"),
                        # annual stock returns
-                       box(width = NULL, title = "Annual returns on selected stocks"),
+                       box(width = NULL, title = "Annual returns on selected stocks"
+                           # ,
+                           # verbatimTextOutput("selected_tickers")
+                           ),
                        # split column: tables and efficient frontier
                        fluidRow(
                            column(width = 6,
-                                  box(width = NULL, title = "Optimal portfolio"),
-                                  box(width = NULL, title = "Minimum variance portfolio")
-                                  ),
+                                  box(width = NULL, title = "Optimal portfolio"
+                                      # ,
+                                      # tableOutput("max_sharpe_ratio_table")
+                                      ),
+                                  box(width = NULL, title = "Minimum variance portfolio"
+                                      # ,
+                                      # tableOutput("min_risk_table")
+                                      ),
                            column(width = 6,
-                                  box(width = NULL, title = "Efficient frontier")
+                                  box(width = NULL, title = "Efficient frontier"
+                                      # ,
+                                      # plotlyOutput("portfolio_plot")
+                                      )
                                   )
                            ),
                        # price plot and correlation matrix
@@ -106,8 +118,12 @@ dashboardPage(
                                   box(width = NULL, title = "Price plot")
                            ),
                            column(width = 6,
-                                  box(width = NULL, title = "Correlation matrix")
+                                  box(width = NULL, title = "Correlation matrix"
+                                      # ,
+                                      # plotOutput("correlation_plot")
+                                      )
                            )
+                       )
                        )
                    )
             )
