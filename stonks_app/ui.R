@@ -94,29 +94,30 @@ dashboardPage(
                        ),
                        # split column: tables and efficient frontier
                        fluidRow(
+                           column(
+                               width = 6,
+                               box(width = NULL, title = "Optimal portfolio",
+                                   tableOutput("max_sharpe_ratio_table")
+                                   ),
+                               box(width = NULL, title = "Minimum variance portfolio",
+                                   tableOutput("min_risk_table")
+                                   )
+                               ),
                            column(width = 6,
-                                  box(width = NULL, title = "Optimal portfolio",
-                                      tableOutput("max_sharpe_ratio_table")
-                                  ),
-                                  box(width = NULL, title = "Minimum variance portfolio",
-                                      tableOutput("min_risk_table")
-                                  ),
-                                  column(width = 6,
-                                         box(width = NULL, title = "Efficient frontier",
-                                             plotlyOutput("portfolio_plot")
-                                         )
+                                  box(width = NULL, title = "Efficient frontier",
+                                      plotlyOutput("portfolio_plot")
+                                      )
                                   )
                            ),
-                           # price plot and correlation matrix
-                           fluidRow(
-                               column(width = 6,
-                                      box(width = NULL, title = "Price plot")
-                               ),
-                               column(width = 6,
-                                      box(width = NULL, title = "Correlation matrix",
-                                          plotOutput("correlation_plot")
-                                      )
-                               )
+                       # price plot and correlation matrix
+                       fluidRow(
+                           column(width = 6,
+                                  box(width = NULL, title = "Price plot")
+                           ),
+                           column(width = 6,
+                                  box(width = NULL, title = "Correlation matrix",
+                                      plotOutput("correlation_plot")
+                                  )
                            )
                        )
                    )
