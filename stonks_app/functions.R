@@ -378,3 +378,9 @@ plot_stock_return_correlations <- function(daily_returns_df){
     theme(text = element_text(size = 16))
   return(p)
 }
+
+
+plot_daily_returns <- function(daily_returns_df){
+  
+  
+}
