@@ -9,6 +9,7 @@
 
 library(shiny)
 library(plotly)
+library(scales)
 # library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -154,6 +155,17 @@ shinyServer(function(input, output, session) {
             output$analytical_OP <- renderTable({
                 req(input$tickersInput)
                 op
+            }, digits = 2)
+            
+            # Render table to display annual returns
+            output$annual_returns <- renderTable({
+                req(input$tickersInput)
+                returns <- data.frame(mr) %>% 
+                    mutate(mr = percent(mr)) %>% 
+                    t()
+                colnames(returns) <- colnames(returns) %>% 
+                    str_replace(pattern = ".AX", replace = "")
+                returns
             }, digits = 2)
             
             # Generate OP from randomly sampled splits
