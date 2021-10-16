@@ -80,12 +80,6 @@ dashboardPage(
                            ),
                            selected = 1
                        ),
-                       # Specify date you want to get data from
-                       sliderInput("start_date", h3("Start date for analysis"),
-                                   min = as.Date("2015-01-01","%Y-%m-%d"),
-                                   max = as.Date("2021-01-01","%Y-%m-%d"),
-                                   value=as.Date("2015-01-01"),
-                                   timeFormat="%d/%m/%Y"),
                        actionButton("go", "Start the Analysis")
                    ),
                    box(width = NULL, title = "Disclaimer",

@@ -43,13 +43,14 @@ shinyServer(function(input, output, session) {
             # 
             # stonks_list <- c()
             # 
+            start_date <- as.Date("2015-01-01","%Y-%m-%d")
             stonks <- input_validation(stonks_vect = input$tickersInput)
             
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(stonks)
             
             # Fetch returns
-            df <- get_prices_for_all_tickers(tickers, from=input$start_date)
+            df <- get_prices_for_all_tickers(tickers, from=start_date)
             daily_df <- daily_returns(df)
             
             # Compute annualised mean array and covariance matrix
