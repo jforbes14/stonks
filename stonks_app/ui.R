@@ -38,6 +38,11 @@ disclaimer_string <- "The information on this website is for general information
 
 # Define UI for application that draws a histogram
 dashboardPage(
+    
+    # Skin
+    skin = "purple",
+    
+    # Header
     dashboardHeader(title = "Stonks"),
 
     # Sidebar
