@@ -16,12 +16,6 @@ source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
-asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
-stocks_vect <- as.vector(asx_stocks[[1]])
-asx_etf <- read_csv('data/ETF_data_cleaned.csv')
-etf_vect <- as.vector(asx_etf[[1]])
-codes_vect <- c(stocks_vect, etf_vect)
-
 intro <- HTML("The Stonks App, is a purpose-built web-app created to help you optimise your portfolio allocation. Investing for the first time is tricky, the investment landscape can seem fragmented and answers are often hard to find. We've all been there, your best friends' uncle went to school with someone who was tipped off about a stock that's going to explode. You want to invest before it's too late, but you also know that it's not totally responsible to allocate all your hard earned money into it, so you want to balance it out with some other stable more stable investments. So right now, you've got the assets in mind, but how do you know how much money to allocate to each? Well, fortunately, we want to help you, and we want to start by introducing you to the <a href='https://www.morningstar.com.au/learn/article/investing-bWes-modern-portfolio-theory-expl/204228'>Modern Portfolio Theory</a>. A method of structuring your portfolio by optimising it for the highest return-risk trade off. We offer some recommended reading above to help you understand the nuances of this approach, but we will delve into some of the details below.
 <br>
 <br>
@@ -37,13 +31,18 @@ Before we go though, we need help with one thing. That's for you to plug in the 
 
 disclaimer_string <- "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
-#     # # Reset all
-#     # useShinyjs(),                                           # Include shinyjs in the UI
-#     # extendShinyjs(text = jsResetCode, functions = "reset"), # Add the js code to the page
-#     # actionButton("reset_button", "Reset Page"),
+# # Reset all
+# useShinyjs(),                                           # Include shinyjs in the UI
+# extendShinyjs(text = jsResetCode, functions = "reset"), # Add the js code to the page
+# actionButton("reset_button", "Reset Page"),
 
 # Define UI for application that draws a histogram
 dashboardPage(
+    
+    # Skin
+    skin = "purple",
+    
+    # Header
     dashboardHeader(title = "Stonks"),
 
     # Sidebar
@@ -62,7 +61,7 @@ dashboardPage(
                        selectizeInput(
                            "tickersInput",
                            "Enter tickers for up to 10 stocks (at least 2)",
-                           choices = codes_vect,
+                           choices = NULL,
                            multiple = TRUE,
                            options = list(create = TRUE, maxItems = 10)
                        ),
@@ -86,12 +85,6 @@ dashboardPage(
                            ),
                            selected = 1
                        ),
-                       # Specify date you want to get data from
-                       sliderInput("start_date", h3("Start date for analysis"),
-                                   min = as.Date("2015-01-01","%Y-%m-%d"),
-                                   max = as.Date("2021-01-01","%Y-%m-%d"),
-                                   value=as.Date("2015-01-01"),
-                                   timeFormat="%d/%m/%Y"),
                        actionButton("go", "Start the Analysis")
                    ),
                    box(width = NULL, title = "Disclaimer",
@@ -124,7 +117,7 @@ dashboardPage(
                                    )
                                ),
                            column(width = 6,
-                                  box(width = NULL, title = "Efficient frontier",
+                                  box(width = NULL, title = "Candidate portfolios",
                                       plotlyOutput("portfolio_plot")
                                       )
                                   )
@@ -135,7 +128,7 @@ dashboardPage(
                                   box(width = NULL, title = "Price plot")
                            ),
                            column(width = 6,
-                                  box(width = NULL, title = "Correlation matrix",
+                                  box(width = NULL, title = "Stock correlations",
                                       plotOutput("correlation_plot")
                                   )
                            )

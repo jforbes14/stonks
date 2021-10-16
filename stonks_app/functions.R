@@ -309,7 +309,6 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     # geom_path() +
     scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
     scale_shape_manual(values = c(1, 19), name = 'Optimal portfolio') +
-    ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
     xlab('Risk') +
     ylab('Return') +
     guides(shape = "none")
@@ -374,7 +373,6 @@ plot_stock_return_correlations <- function(daily_returns_df){
     geom_label() +
     xlab('Ticker') + 
     ylab('Ticker') + 
-    ggtitle('Correlations between stocks') +
     theme(text = element_text(size = 16))
   return(p)
 }
