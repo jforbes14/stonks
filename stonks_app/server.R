@@ -15,12 +15,23 @@ library(plotly)
 
 source("functions.R")
 
+# Valid tickers
+asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
+stocks_vect <- as.vector(asx_stocks[[1]])
+asx_etf <- read_csv('data/ETF_data_cleaned.csv')
+etf_vect <- as.vector(asx_etf[[1]])
+codes_vect <- c(stocks_vect, etf_vect)
+
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
     
     # # Reset all
     # observeEvent(input$reset_button, {js$reset()})
     
+    # Server-side inputs for selectizeInput
+    updateSelectizeInput(session, "tickersInput", choices = codes_vect, server = TRUE)
+    
+    # Execute once user clicks go
     observeEvent(
         input$go,
         {
