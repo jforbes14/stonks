@@ -309,7 +309,6 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     # geom_path() +
     scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
     scale_shape_manual(values = c(1, 19), name = 'Optimal portfolio') +
-    ggtitle(label = "Risk, return and sharpe ratio for each sampled portfolio") +
     xlab('Risk') +
     ylab('Return') +
     guides(shape = "none")
@@ -374,13 +373,52 @@ plot_stock_return_correlations <- function(daily_returns_df){
     geom_label() +
     xlab('Ticker') + 
     ylab('Ticker') + 
-    ggtitle('Correlations between stocks') +
     theme(text = element_text(size = 16))
   return(p)
 }
 
 
-plot_daily_returns <- function(daily_returns_df){
+
+daily_returns_with_date <- function(prices_df = df) {
+  tickers = unique(prices_df$ticker)
+  
+  daily_returns <- prices_df %>%
+    group_by(ticker) %>% 
+    arrange(date) %>% 
+    mutate(ret = (((price / lag(price)) - 1)) * 100)
+  
+  daily_returns$ticker <- gsub(".AX", "", as.character(daily_returns$ticker))
+  
+  daily_returns <- daily_returns %>% drop_na()
   
   
+  daily_returns <- daily_returns %>%
+    group_by(ticker) %>%
+    arrange(date) %>% 
+    mutate(cumret = cumsum(ret) )
+  
+  
+  daily_data <- daily_returns %>% select(-c("price"))
+  xlim1 <- min(daily_data$date)
+  xlim2 <- max(daily_data$date)
+  
+  print(xlim1)
+  print(xlim2)
+  
+  p <- daily_data %>% ggplot(aes(x = date, y = cumret, color = ticker, group = ticker, 
+                                 text = paste( 'Ticker: ', ticker,
+                                               '<br>Date: ', as.Date(date),
+                                               '<br>Cumulative Return: %', round(cumret,2)))) + geom_line() +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    coord_x_date(xlim = c(xlim1, xlim2)) +
+    labs(title = "Cumulative Returns", y = "Return", x = "Date") +
+    scale_color_brewer(palette = "Paired") + theme(legend.key=element_blank()) +
+    theme_bw()
+  
+  r_plotly <- ggplotly(p, tooltip = c("text")) %>%
+    layout(
+      yaxis = list(fixedrange=TRUE),
+      xaxis = list(fixedrange=TRUE)
+    )
+  return(r_plotly)
 }
