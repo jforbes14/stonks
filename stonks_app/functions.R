@@ -132,6 +132,32 @@ daily_returns <- function(prices_df) {
   return(daily_returns)
 }
 
+# Get annual returns for each stock using all available dates
+# Input
+# prices_df: data frame of daily stock prices
+# Returns
+# Data frame of annual returns, for each stock, over the dates it is available
+annual_returns <- function(prices_df) {
+  annual_returns <- prices_df %>% 
+    group_by(ticker) %>% 
+    filter(date == min(date)) %>% 
+    rename(start_price = price, start_date = date) %>% 
+    left_join(
+      prices_df %>% 
+        group_by(ticker) %>% 
+        filter(date == max(date)) %>% 
+        rename(end_price = price, end_date = date),
+      by = 'ticker'
+    ) %>% 
+    mutate(
+      days_between = as.numeric(end_date - start_date, d = days),
+      years_between = days_between/365,
+      returns = (end_price/start_price)^(1/years_between) - 1
+    )
+  return(annual_returns)
+}
+
+
 # Get vector of mean returns, and covariance matrix, for the portfolio
 # Input
 # daily_returns: data frame of daily returns for each stock in the portfolio
