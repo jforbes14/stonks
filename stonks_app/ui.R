@@ -126,7 +126,7 @@ dashboardPage(
                        fluidRow(
                            column(width = 6,
                                   box(width = NULL, title = "Price Plot",
-                                      plotlyOutput('relative_returns')
+                                      plotlyOutput('relative_returns'))
                            ),
                            # price plot and correlation matrix
                             column(width = 6,
@@ -136,7 +136,6 @@ dashboardPage(
                            )
                        )
                    )
-                )
             )
         )
     )
