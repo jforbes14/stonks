@@ -103,7 +103,7 @@ dashboardPage(
                            ),
                        # annual stock returns
                        box(width = NULL, title = "Annual returns on selected stocks",
-                           verbatimTextOutput("selected_tickers")
+                           tableOutput("annual_returns")
                        ),
                        # split column: tables and efficient frontier
                        fluidRow(

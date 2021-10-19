@@ -9,6 +9,7 @@
 
 library(shiny)
 library(plotly)
+library(scales)
 # library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -49,9 +50,12 @@ shinyServer(function(input, output, session) {
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(stonks)
             
-            # Fetch returns
+            # Fetch daily returns
             df <- get_prices_for_all_tickers(tickers, from=start_date)
             daily_df <- daily_returns(df)
+            
+            # Compute annual returns
+            annual_df <- annual_returns(df)
             
             # Compute annualised mean array and covariance matrix
             mr <- mean_returns(daily_df)
@@ -162,6 +166,18 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 op
             }, digits = 2)
+            
+            # Render table to display annual returns
+            output$annual_returns <- renderTable({
+                req(input$tickersInput)
+                returns <- annual_df %>% 
+                    select(ticker, returns) %>% 
+                    mutate(ticker = str_replace(ticker, pattern = ".AX", replace = ""),
+                           returns = percent(returns)) %>% 
+                    column_to_rownames("ticker") %>% 
+                    t()
+                returns
+            }, digits = 3)
             
             # Generate OP from randomly sampled splits
             output$sampled_OP <- renderTable({
