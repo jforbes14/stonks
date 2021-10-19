@@ -432,9 +432,9 @@ daily_returns_with_date <- function(prices_df = df) {
   print(xlim2)
   
   p <- daily_data %>% ggplot(aes(x = date, y = cumret, color = ticker, group = ticker, 
-                                 text = paste( 'Ticker: ', ticker,
+                                 text = paste0( 'Ticker: ', ticker,
                                                '<br>Date: ', as.Date(date),
-                                               '<br>Cumulative Return: %', round(cumret,2)))) + geom_line() +
+                                               '<br>Cumulative Return: ', round(cumret,2), '%'))) + geom_line() +
     scale_y_continuous(labels = function(x) paste0(x, "%")) +
     coord_x_date(xlim = c(xlim1, xlim2)) +
     labs(title = "Cumulative Returns", y = "Return", x = "Date") +
