@@ -10,6 +10,7 @@
 library(shiny)
 library(plotly)
 library(scales)
+library(shinybusy)
 # library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -38,14 +39,25 @@ shinyServer(function(input, output, session) {
         {
             ############################################################################
             
+            # Setup
+            
+            ############################################################################
+            
+            # Loading gif
+            # show_modal_spinner() # show the modal window
+            show_modal_gif(src='https://jeroen.github.io/images/banana.gif')
+            
+            # Start date
+            start_date <- as.Date("2015-01-01","%Y-%m-%d")
+            
+            # Input tickers
+            stonks <- input_validation(stonks_vect = input$tickersInput)
+            
+            ############################################################################
+            
             # Data computations
             
             ############################################################################
-            # 
-            # stonks_list <- c()
-            # 
-            start_date <- as.Date("2015-01-01","%Y-%m-%d")
-            stonks <- input_validation(stonks_vect = input$tickersInput)
             
             # Add .AX suffix to tickers and order
             tickers <- add_AX_to_tickers(stonks)
@@ -177,6 +189,16 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 op
             }, digits = 2)
+            
+            ############################################################################
+            
+            # Clean up
+            
+            ############################################################################
+            
+            # Loading gif
+            # remove_modal_spinner() # remove it when done
+            remove_modal_gif()
         }
     )
 })
