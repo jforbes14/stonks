@@ -21,6 +21,20 @@ intro <- HTML("Stonks is a purpose-built app to help you optimise your ASX portf
 <br>
 Once you know which assets you’d like to invest in, enter their ASX tickers as well as the maximum share of your portfolio you’d want any given asset to have. After clicking GO, Stonks will crunch the numbers; looking at the risk, return and covariance of your selected assets for up to the last 6 years. What you’ll see below is a breakdown of the results, including the optimal portfolio – which is the portfolio that has the highest level of return for the risk involved.")
 
+annual_returns_text <- HTML("The annualised return on investment for each stock over up to the past 6 years.")
+
+optimal_portfolio_text <- HTML("This portfolio represents the greatest amount of return relative to risk historically, which is the portfolio with the highest sharpe ratio.")
+
+minimum_variance_portfolio_text <- HTML("This portfolio represents the lowest amount of risk historically. It is also likely to have lower returns.")
+
+candidate_portfolios_text <- HTML("Each point here is a potential portfolio with it's risk and return. You can see the optimal portfolio is the shaded point.")
+
+price_plot_text <- HTML("Here are the returns on investment for each stock over the last 6 years. You will see that stocks start at 0%, and as prices move up/down the return will increase/decrease.")
+
+stock_correlations_text <- HTML("The correlations between returns for each pair of stocks from those selected. A diversified portfolio would be one that has collection of stocks that are not correlated or negative correlated.")
+
+
+
 # intro <- HTML("The Stonks App, is a purpose-built web-app created to help you optimise your portfolio allocation. Investing for the first time is tricky, the investment landscape can seem fragmented and answers are often hard to find. We've all been there, your best friends' uncle went to school with someone who was tipped off about a stock that's going to explode. You want to invest before it's too late, but you also know that it's not totally responsible to allocate all your hard earned money into it, so you want to balance it out with some other stable more stable investments. So right now, you've got the assets in mind, but how do you know how much money to allocate to each? Well, fortunately, we want to help you, and we want to start by introducing you to the <a href='https://www.morningstar.com.au/learn/article/investing-bWes-modern-portfolio-theory-expl/204228'>Modern Portfolio Theory</a>. A method of structuring your portfolio by optimising it for the highest return-risk trade off. We offer some recommended reading above to help you understand the nuances of this approach, but we will delve into some of the details below.
 # <br>
 # <br>
@@ -93,10 +107,7 @@ dashboardPage(
                        actionButton("go", "Start the Analysis")
                    ),
                    box(width = NULL, title = "Disclaimer",
-                       p(
-                           class = "text-muted",
-                           disclaimer_string
-                           )
+                       p(disclaimer_string, class = "text-muted")
                    )
             ),
             column(width = 9,
@@ -108,6 +119,7 @@ dashboardPage(
                            ),
                        # annual stock returns
                        box(width = NULL, title = "Annual returns on selected stocks",
+                           p(annual_returns_text, class = "text-muted"),
                            tableOutput("annual_returns")
                        ),
                        # split column: tables and efficient frontier
@@ -115,14 +127,17 @@ dashboardPage(
                            column(
                                width = 6,
                                box(width = NULL, title = "Optimal portfolio",
+                                   p(optimal_portfolio_text, class = "text-muted"),
                                    tableOutput("max_sharpe_ratio_table")
                                    ),
                                box(width = NULL, title = "Minimum variance portfolio",
+                                   p(minimum_variance_portfolio_text, class = "text-muted"),
                                    tableOutput("min_risk_table")
                                    )
                                ),
                            column(width = 6,
                                   box(width = NULL, title = "Candidate portfolios",
+                                      p(candidate_portfolios_text, class = "text-muted"),
                                       plotlyOutput("portfolio_plot")
                                       )
                                   )
@@ -130,10 +145,13 @@ dashboardPage(
                        # price plot and correlation matrix
                        fluidRow(
                            column(width = 6,
-                                  box(width = NULL, title = "Price plot")
+                                  box(width = NULL, title = "Price plot",
+                                      p(price_plot_text, class = "text-muted"),
+                                  )
                            ),
                            column(width = 6,
                                   box(width = NULL, title = "Stock correlations",
+                                      p(stock_correlations_text, class = "text-muted"),
                                       plotOutput("correlation_plot")
                                   )
                            )
