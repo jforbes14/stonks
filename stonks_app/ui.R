@@ -111,53 +111,63 @@ dashboardPage(
                    )
             ),
             column(width = 9,
-                   # RHS
+                   # Intro
                    fluidRow(
-                       # intro
-                       box(width = NULL, title = "Intro",
-                           intro
-                           ),
-                       # annual stock returns
-                       box(width = NULL, title = "Annual returns on selected stocks",
-                           p(annual_returns_text, class = "text-muted"),
-                           tableOutput("annual_returns")
-                       ),
-                       # split column: tables and efficient frontier
-                       fluidRow(
-                           column(
-                               width = 6,
-                               box(width = NULL, title = "Optimal portfolio",
-                                   p(optimal_portfolio_text, class = "text-muted"),
-                                   tableOutput("max_sharpe_ratio_table")
-                                   ),
-                               box(width = NULL, title = "Minimum variance portfolio",
-                                   p(minimum_variance_portfolio_text, class = "text-muted"),
-                                   tableOutput("min_risk_table")
-                                   )
-                               ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Candidate portfolios",
-                                      p(candidate_portfolios_text, class = "text-muted"),
-                                      plotlyOutput("portfolio_plot")
-                                      )
-                                  )
-                           ),
-                       # price plot and correlation matrix
-                       fluidRow(
-                           column(width = 6,
-                                  box(width = NULL, title = "Price plot",
-                                      p(price_plot_text, class = "text-muted"),
-                                  )
-                           ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Stock correlations",
-                                      p(stock_correlations_text, class = "text-muted"),
-                                      plotOutput("correlation_plot")
-                                  )
+                       column(
+                           width = 12,
+                           box(width = NULL, title = "Intro", intro)
                            )
+                       ),
+                   # Everything else only appears once go is clicked
+                   conditionalPanel(
+                       condition = "input.go",
+                   # Annual stock returns
+                   fluidRow(
+                       column(
+                           width = 12,
+                           box(width = NULL, title = "Annual returns on selected stocks",
+                               p(annual_returns_text, class = "text-muted"),
+                               tableOutput("annual_returns")
+                               )
+                           )
+                       ),
+                   # Split column: tables and efficient frontier
+                   fluidRow(
+                       column(
+                           width = 6,
+                           box(width = NULL, title = "Optimal portfolio",
+                               p(optimal_portfolio_text, class = "text-muted"),
+                               tableOutput("max_sharpe_ratio_table")
+                               ),
+                           box(width = NULL, title = "Minimum variance portfolio",
+                               p(minimum_variance_portfolio_text, class = "text-muted"),
+                               tableOutput("min_risk_table")
+                               )
+                           ),
+                       column(width = 6,
+                              box(width = NULL, title = "Candidate portfolios",
+                                  p(candidate_portfolios_text, class = "text-muted"),
+                                  plotlyOutput("portfolio_plot")
+                                  )
+                              )
+                       ),
+                   # price plot and correlation matrix
+                   fluidRow(
+                       column(width = 6,
+                              box(width = NULL, title = "Price plot",
+                                  p(price_plot_text, class = "text-muted"),
+                              )
+                       ),
+                       column(width = 6,
+                              box(width = NULL, title = "Stock correlations",
+                                  p(stock_correlations_text, class = "text-muted"),
+                                  plotOutput("correlation_plot")
+                              )
                        )
+                   )
+                   )
                    )
             )
         )
     )
-)
+
