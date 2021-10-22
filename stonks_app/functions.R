@@ -428,9 +428,6 @@ daily_returns_with_date <- function(prices_df = df) {
   xlim1 <- min(daily_data$date)
   xlim2 <- max(daily_data$date)
   
-  print(xlim1)
-  print(xlim2)
-  
   p <- daily_data %>% ggplot(aes(x = date, y = cumret, color = ticker, group = ticker, 
                                  text = paste0( 'Ticker: ', ticker,
                                                '<br>Date: ', as.Date(date),
