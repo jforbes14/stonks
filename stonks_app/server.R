@@ -118,6 +118,13 @@ shinyServer(function(input, output, session) {
                 )
             })
             
+            output$relative_returns <- renderPlotly({
+                req(input$tickersInput)
+                daily_returns_with_date(
+                    prices_df = df
+                )
+            })
+            
             
             # Table showing top values with maximum sharpe ratio
             output$max_sharpe_ratio_table <- renderTable({

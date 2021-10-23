@@ -109,26 +109,28 @@ dashboardPage(
                        fluidRow(
                            column(
                                width = 6,
-                               box(width = NULL, title = "Optimal portfolio",
+                               box(width = NULL, title = "Optimal Portfolio",
                                    tableOutput("max_sharpe_ratio_table")
                                    ),
-                               box(width = NULL, title = "Minimum variance portfolio",
+                               box(width = NULL, title = "Minimum Variance Portfolio",
                                    tableOutput("min_risk_table")
                                    )
                                ),
                            column(width = 6,
-                                  box(width = NULL, title = "Candidate portfolios",
+                                  box(width = NULL, title = "Candidate Portfolios",
                                       plotlyOutput("portfolio_plot")
                                       )
                                   )
                            ),
-                       # price plot and correlation matrix
+                       
                        fluidRow(
                            column(width = 6,
-                                  box(width = NULL, title = "Price plot")
+                                  box(width = NULL, title = "Price Plot",
+                                      plotlyOutput('relative_returns'))
                            ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Stock correlations",
+                           # price plot and correlation matrix
+                            column(width = 6,
+                                  box(width = NULL, title = "Stock Correlations",
                                       plotOutput("correlation_plot")
                                   )
                            )
