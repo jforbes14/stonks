@@ -16,14 +16,25 @@ source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
-intro <- HTML("Stonks is a purpose-built app to help you optimise your ASX portfolio with the help of Modern Portfolio Theory and other insights derived from historical data. It provides you with analysis on the optimal portfolio, correlations and more to assist with an investment decision.
+intro <- HTML("
+Stonks is a purpose-built app to help you decide how you should allocate money to stocks you are considering investing in.
 <br>
 <br>
-Once you know which assets you’d like to invest in, enter their ASX tickers as well as the maximum share of your portfolio you’d want any given asset to have. After clicking GO, Stonks will crunch the numbers; looking at the risk, return and covariance of your selected assets for up to the last 6 years. What you’ll see below is a breakdown of the results, including the optimal portfolio – which is the portfolio that has the highest level of return for the risk involved.")
+Once you tell us which ASX stocks you want to invest in, we can tell you how much of each to hold so that you get the greatest return relative to risk - the optimal portfolio.
+<br>
+<br>
+The dashboard below will display the optimal portfolio along with supporting analysis illustrating the performance and relationships between the stocks.")
+
+
+
+# Stonks is a purpose-built app to help you optimise your ASX portfolio with the help of Modern Portfolio Theory and other insights derived from historical data. It provides you with analysis on the optimal portfolio, correlations and more to assist with an investment decision.
+# <br>
+# <br>
+# Once you know which assets you’d like to invest in, enter their ASX tickers as well as the maximum share of your portfolio you’d want any given asset to have. After clicking GO, Stonks will crunch the numbers; looking at the risk, return and covariance of your selected assets for up to the last 6 years. What you’ll see below is a breakdown of the results, including the optimal portfolio – which is the portfolio that has the highest level of return for the risk involved.")
 
 annual_returns_text <- HTML("The annual return for your selected stocks.")
 
-optimal_portfolio_text <- HTML("Your optimal portfolio. This is the portfolio that has had the greatest return relative to its risk.")
+optimal_portfolio_text <- HTML("Your optimal portfolio with the percentage allocation for each stock. This is the portfolio that has had the greatest return relative to its risk.")
 
 minimum_variance_portfolio_text <- HTML("The portfolio with the least risk. This is likely to have lower returns.")
 
@@ -115,7 +126,7 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 12,
-                           box(width = NULL, title = "Intro", intro)
+                           box(width = NULL, title = "Intro", p(intro, style = "font-size:16px"))
                            )
                        ),
                    # Everything else only appears once go is clicked
