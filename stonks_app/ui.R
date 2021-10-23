@@ -156,6 +156,7 @@ dashboardPage(
                        column(width = 6,
                               box(width = NULL, title = "Price plot",
                                   p(price_plot_text, class = "text-muted"),
+                                  plotlyOutput('relative_returns')
                               )
                        ),
                        column(width = 6,
