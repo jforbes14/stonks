@@ -21,17 +21,17 @@ intro <- HTML("Stonks is a purpose-built app to help you optimise your ASX portf
 <br>
 Once you know which assets you’d like to invest in, enter their ASX tickers as well as the maximum share of your portfolio you’d want any given asset to have. After clicking GO, Stonks will crunch the numbers; looking at the risk, return and covariance of your selected assets for up to the last 6 years. What you’ll see below is a breakdown of the results, including the optimal portfolio – which is the portfolio that has the highest level of return for the risk involved.")
 
-annual_returns_text <- HTML("The annualised return on investment for each stock over up to the past 6 years.")
+annual_returns_text <- HTML("The annual return for your selected stocks.")
 
-optimal_portfolio_text <- HTML("This portfolio represents the greatest amount of return relative to risk historically, which is the portfolio with the highest sharpe ratio.")
+optimal_portfolio_text <- HTML("Your optimal portfolio. This is the portfolio that has had the greatest return relative to its risk.")
 
-minimum_variance_portfolio_text <- HTML("This portfolio represents the lowest amount of risk historically. It is also likely to have lower returns.")
+minimum_variance_portfolio_text <- HTML("The portfolio with the least risk. This is likely to have lower returns.")
 
-candidate_portfolios_text <- HTML("Each point here is a potential portfolio with it's risk and return. You can see the optimal portfolio is the shaded point.")
+candidate_portfolios_text <- HTML("Each point here is an alternative portfolio showing it's risk and return. The optimal portfolio is the shaded point. Hover to see the breakdown of stocks.")
 
-price_plot_text <- HTML("Here are the returns on investment for each stock over the last 6 years. You will see that stocks start at 0%, and as prices move up/down the return will increase/decrease.")
+price_plot_text <- HTML("The historical returns for each stock.")
 
-stock_correlations_text <- HTML("The correlations between returns for each pair of stocks from those selected. A diversified portfolio would be one that has collection of stocks that are not correlated or negative correlated.")
+stock_correlations_text <- HTML("The correlations between returns for each pair of stocks.")
 
 
 
@@ -125,7 +125,7 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 12,
-                           box(width = NULL, title = "Annual returns on selected stocks",
+                           box(width = NULL, title = "Annual return",
                                p(annual_returns_text, class = "text-muted"),
                                tableOutput("annual_returns")
                                )
