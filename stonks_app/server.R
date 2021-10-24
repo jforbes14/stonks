@@ -11,6 +11,7 @@ library(shiny)
 library(plotly)
 library(scales)
 library(shinybusy)
+library(tableHTML)
 # library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -127,20 +128,20 @@ shinyServer(function(input, output, session) {
             
             
             # Table showing top values with maximum sharpe ratio
-            output$max_sharpe_ratio_table <- renderTable({
+            output$max_sharpe_ratio_table <- renderUI({
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(desc(sharpe_ratio)) %>%
-                    head(1)
-            }, digits = 4)
+                    head(1) %>% tableHTML()
+            })
             
             # Table showing top values with minimum risk
-            output$min_risk_table <- renderTable({
+            output$min_risk_table <- renderUI({
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
-                    head(1)
-            }, digits = 4)
+                    head(1) %>% tableHTML()
+            })
             
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({

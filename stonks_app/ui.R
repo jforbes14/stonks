@@ -12,6 +12,7 @@ library(shinyjs)
 library(tidyverse)
 library(plotly)
 library(shinydashboard)
+library(tableHTML)
 source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -49,6 +50,8 @@ dashboardPage(
     dashboardSidebar(
         disable = TRUE
     ),
+    
+    
 
     # Tabs
     dashboardBody(
@@ -107,13 +110,15 @@ dashboardPage(
                        ),
                        # split column: tables and efficient frontier
                        fluidRow(
-                           column(
-                               width = 6,
+                           column(width = 6,
+                                  
                                box(width = NULL, title = "Optimal Portfolio",
-                                   tableOutput("max_sharpe_ratio_table")
+                                   includeCSS('www/mycss.css'),
+                                   uiOutput("max_sharpe_ratio_table")
                                    ),
+                               
                                box(width = NULL, title = "Minimum Variance Portfolio",
-                                   tableOutput("min_risk_table")
+                                   uiOutput("min_risk_table")
                                    )
                                ),
                            column(width = 6,
