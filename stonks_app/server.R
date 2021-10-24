@@ -21,6 +21,9 @@ source("functions.R")
 # Valid tickers
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
+#manual add during testing
+remove_vect <- c("1AG", "HGM", "AKN")
+stocks_vect <- stocks_vect[! stocks_vect %in% remove_vect]
 asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)
@@ -132,7 +135,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(desc(sharpe_ratio)) %>%
-                    head(1) %>% tableHTML()
+                    head(1) %>% tableHTML(round = 2, rownames = FALSE)
             })
             
             # Table showing top values with minimum risk
@@ -140,7 +143,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
-                    head(1) %>% tableHTML()
+                    head(1) %>% tableHTML(round = 2, rownames = FALSE)
             })
             
             # Print out the selected tickers

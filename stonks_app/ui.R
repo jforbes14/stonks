@@ -112,12 +112,14 @@ dashboardPage(
                        fluidRow(
                            column(width = 6,
                                   
-                               box(width = NULL, title = "Optimal Portfolio",
+                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                                   width = NULL, title = "Optimal Portfolio",
                                    includeCSS('www/mycss.css'),
                                    uiOutput("max_sharpe_ratio_table")
                                    ),
                                
-                               box(width = NULL, title = "Minimum Variance Portfolio",
+                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                                   width = NULL, title = "Minimum Variance Portfolio",
                                    uiOutput("min_risk_table")
                                    )
                                ),

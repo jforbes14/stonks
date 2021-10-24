@@ -1,9 +1,15 @@
-table {
+table.Beta td  {
    text-align: center;
    font-size: 20px;
+   border-style:solid;
+   border-top:thick double #ff0000;
+   border:none;
  }
  
 th {
-   background-color: #D265FE;
+   text-align: center;
+   background-color: #866AEC;
    height: 30px;
+   border:none;
  }
+ 
