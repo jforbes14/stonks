@@ -105,7 +105,7 @@ dashboardPage(
                            intro
                            ),
                        # annual stock returns
-                       box(width = NULL, title = "Annual returns on selected stocks",
+                       box(width = NULL, title = "Annual Returns",
                            tableOutput("annual_returns")
                        ),
                        # split column: tables and efficient frontier
