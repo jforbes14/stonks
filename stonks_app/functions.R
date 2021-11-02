@@ -258,14 +258,17 @@ compute_risk <- function(cov_returns, wts) {
 # Returns
 # Risk value for the given portfolio split
 portfolios_summary_df <- function(splits, returns, risk) {
-  return(
-    data_frame(
-      return = returns %>% as.vector(),
-      risk = risk %>% as.vector()
-    ) %>%
-      mutate(sharpe_ratio = return/risk) %>%
-      bind_cols(splits %>% as.data.frame())
-  )
+  
+  a <- data_frame(
+    return = returns %>% as.vector(),
+    risk = risk %>% as.vector()
+  ) %>%
+    mutate(sharpe_ratio = return/risk) %>%
+    bind_cols(splits %>% as.data.frame())
+  
+  names(a) <- gsub(".AX", "", names(a))
+  
+  return(a)
 }
 
 
@@ -321,8 +324,7 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     arrange(-return)
   
   # Isolate the stock splits
-  stocks_splits <- plot_data %>% 
-    select(ends_with('.AX'))
+  stocks_splits <- plot_data %>% select(-c("return", "risk", "sharpe_ratio", "risk_increments", "optimal_portfolio"))
   names(stocks_splits) <- gsub('.AX', '', names(stocks_splits))
   stocks_splits[] <- Map(paste, names(stocks_splits), stocks_splits, sep = ':')
   plot_data$split <- paste(

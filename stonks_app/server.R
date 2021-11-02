@@ -138,8 +138,9 @@ shinyServer(function(input, output, session) {
             # Table showing top values with maximum sharpe ratio
             output$max_sharpe_ratio_table <- renderUI({
                 req(input$tickersInput)
-                sampled_portfolio_risk_return %>%
+                sampled_portfolio_risk_return %>% 
                     arrange(desc(sharpe_ratio)) %>%
+                    select(-c(1:3)) %>% 
                     head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
             })
             
@@ -148,6 +149,7 @@ shinyServer(function(input, output, session) {
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
+                    select(-c(1:3)) %>%
                     head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
             })
             
