@@ -105,7 +105,7 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 12,
-                           img(src = "intro_banner.png", width = "100%", align = "center")
+                           img(src = "stonks-banner-thin.png", width = "100%", align = "center")
                            # box(width = NULL, title = "Intro", p(intro, style = "font-size:16px"))
                            )
                        ),
