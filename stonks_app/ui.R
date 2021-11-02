@@ -26,7 +26,9 @@ Once you tell us which ASX stocks you want to invest in, we can tell you how muc
 <br>
 The dashboard below will display the optimal portfolio along with supporting analysis illustrating the performance and relationships between the stocks.")
 
-annual_returns_text <- HTML("The annual return for your selected stocks.")
+annual_returns_text <- HTML("The annual return for each of your selected stocks.")
+
+annual_risk_text <- HTML("The annual risk (variance) for each of your selected stocks.")
 
 optimal_portfolio_text <- HTML("Your optimal portfolio with the percentage allocation for each stock. This is the portfolio that has had the greatest return relative to its risk.")
 
@@ -52,7 +54,7 @@ dashboardPage(
     skin = "purple",
     
     # Header
-    dashboardHeader(title = "Stonks"),
+    dashboardHeader(title = "stonks"),
 
     # Sidebar
     dashboardSidebar(
@@ -135,6 +137,10 @@ dashboardPage(
                            box(width = NULL, title = "Annual return",
                                p(annual_returns_text, class = "text-muted"),
                                tableOutput("annual_returns")
+                           ),
+                           box(width = NULL, title = "Annual risk",
+                               p(annual_risk_text, class = "text-muted"),
+                               tableOutput("annual_risk")
                            ),
                            box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
                                width = NULL, title = "Minimum Variance Portfolio",

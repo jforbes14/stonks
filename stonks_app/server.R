@@ -49,7 +49,12 @@ shinyServer(function(input, output, session) {
             
             # Loading gif
             # show_modal_spinner() # show the modal window
-            show_modal_gif(src='https://jeroen.github.io/images/banana.gif')
+            show_modal_gif(
+                # Banana
+                # src='https://jeroen.github.io/images/banana.gif'
+                # Rocket
+                src='rocket launch GIF.gif'
+                )
             
             # Start date
             start_date <- as.Date("2015-01-01","%Y-%m-%d")
@@ -193,6 +198,19 @@ shinyServer(function(input, output, session) {
                     column_to_rownames("ticker") %>% 
                     t()
                 returns
+            }, digits = 3)
+            
+            # Render table to display risk
+            output$annual_risk <- renderTable({
+                req(input$tickersInput)
+                risk_values <- diag(cv) %>% 
+                    as.data.frame()
+                colnames(risk_values) <- c("annualised_risk") 
+                rownames(risk_values) <- rownames(risk_values) %>%
+                    str_replace(pattern = ".AX", replacement = "")
+                risk_values %>% 
+                    mutate(annualised_risk = percent(annualised_risk)) %>% 
+                    t()
             }, digits = 3)
             
             # Generate OP from randomly sampled splits
