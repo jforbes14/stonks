@@ -211,8 +211,8 @@ shinyServer(function(input, output, session) {
                 colnames(risk_values) <- c("annualised_risk") 
                 rownames(risk_values) <- rownames(risk_values) %>%
                     str_replace(pattern = ".AX", replacement = "")
-                risk_values %>% round(2) %>%
-                    mutate(annualised_risk = percent(annualised_risk)) %>%
+                risk_values %>% 
+                    mutate(annualised_risk = percent(round(annualised_risk, 2))) %>%
                     t() %>%
                     tableHTML(round = 2, rownames = FALSE, border = 0)
             })
