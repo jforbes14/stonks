@@ -18,6 +18,9 @@ hello <- function() {
 
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
+#manual add during testing
+remove_vect <- c("1AG")
+stocks_vect <- stocks_vect[! stocks_vect %in% remove_vect]
 asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)

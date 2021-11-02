@@ -12,6 +12,7 @@ library(shinyjs)
 library(tidyverse)
 library(plotly)
 library(shinydashboard)
+library(tableHTML)
 source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -57,6 +58,8 @@ dashboardPage(
     dashboardSidebar(
         disable = TRUE
     ),
+    
+    
 
     # Tabs
     dashboardBody(
@@ -126,13 +129,15 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 6,
-                           box(width = NULL, title = "Optimal portfolio",
+                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                               width = NULL, title = "Optimal portfolio",
                                p(optimal_portfolio_text, class = "text-muted"),
-                               tableOutput("max_sharpe_ratio_table")
+                               includeCSS('www/mycss.css'),
+                               uiOutput("max_sharpe_ratio_table")
                                ),
-                           box(width = NULL, title = "Minimum variance portfolio",
-                               p(minimum_variance_portfolio_text, class = "text-muted"),
-                               tableOutput("min_risk_table")
+                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                               width = NULL, title = "Minimum Variance Portfolio",
+                               uiOutput("min_risk_table")
                                )
                            ),
                        column(width = 6,
