@@ -22,7 +22,7 @@ source("functions.R")
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
 #manual add during testing
-remove_vect <- c("1AG", "HGM", "AKN", "AHK", "BIN", "APD", "CGM", "AHN", "CDH")
+remove_vect <- c("1AG", "HGM", "AKN", "AHK", "BIN", "APD", "CGM", "AHN", "CDH", "ALT")
 stocks_vect <- stocks_vect[! stocks_vect %in% remove_vect]
 asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])
@@ -141,7 +141,8 @@ shinyServer(function(input, output, session) {
                 sampled_portfolio_risk_return %>% 
                     arrange(desc(sharpe_ratio)) %>%
                     select(-c(1:3)) %>% 
-                    head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
+                    head(1) %>% select_if(is.numeric) %>%
+                    mutate_all(~ percent(.)) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
             })
             
             # Table showing top values with minimum risk
@@ -150,7 +151,8 @@ shinyServer(function(input, output, session) {
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
                     select(-c(1:3)) %>%
-                    head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
+                    head(1) %>% select_if(is.numeric) %>%
+                    mutate_all(~ percent(.)) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
             })
             
             # Print out the selected tickers
@@ -191,35 +193,35 @@ shinyServer(function(input, output, session) {
             }, digits = 2)
             
             # Render table to display annual returns
-            output$annual_returns <- renderTable({
+            output$annual_returns <- renderUI({
                 req(input$tickersInput)
                 returns <- annual_df %>% 
                     select(ticker, returns) %>% 
                     mutate(ticker = str_replace(ticker, pattern = ".AX", replace = ""),
                            returns = percent(returns)) %>% 
                     column_to_rownames("ticker") %>% 
-                    t()
-                returns
-            }, digits = 3)
+                    t() %>% tableHTML(round = 2, rownames = FALSE, border = 0)
+            })
             
             # Render table to display risk
-            output$annual_risk <- renderTable({
+            output$annual_risk <- renderUI({
                 req(input$tickersInput)
                 risk_values <- diag(cv) %>% 
                     as.data.frame()
                 colnames(risk_values) <- c("annualised_risk") 
                 rownames(risk_values) <- rownames(risk_values) %>%
                     str_replace(pattern = ".AX", replacement = "")
-                risk_values %>% 
-                    mutate(annualised_risk = percent(annualised_risk)) %>% 
-                    t()
-            }, digits = 3)
+                risk_values %>% round(2) %>%
+                    mutate(annualised_risk = percent(annualised_risk)) %>%
+                    t() %>%
+                    tableHTML(round = 2, rownames = FALSE, border = 0)
+            })
             
             # Generate OP from randomly sampled splits
             output$sampled_OP <- renderTable({
                 req(input$tickersInput)
                 op
-            }, digits = 2)
+            })
             
             ############################################################################
             
