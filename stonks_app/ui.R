@@ -38,7 +38,7 @@ price_plot_text <- HTML("The historical returns for each stock.")
 
 stock_correlations_text <- HTML("The correlations between returns for each pair of stocks.")
 
-disclaimer_string <- "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
+disclaimer_string <- "The information on this website is for general information only and should not be taken as financial advice nor any professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
 # # Reset all
 # useShinyjs(),                                           # Include shinyjs in the UI
@@ -97,11 +97,10 @@ dashboardPage(
                            selected = 1
                        ),
                        actionButton("go", "Start the Analysis")
+                   ),
+                   box(width = NULL, title = "Disclaimer",
+                       p(disclaimer_string, class = "text-muted", style = "font-size:10px")
                    )
-                   # ,
-                   # box(width = NULL, title = "Disclaimer",
-                   #     p(disclaimer_string, class = "text-muted")
-                   # )
             ),
             column(width = 9,
                    # Intro
@@ -112,6 +111,8 @@ dashboardPage(
                            # box(width = NULL, title = "Intro", p(intro, style = "font-size:16px"))
                            )
                        ),
+                   # Space
+                   br(),
                    # Everything else only appears once go is clicked
                    conditionalPanel(
                        condition = "input.go",
@@ -119,22 +120,22 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 12,
-                           box(width = NULL, title = "Annual return",
-                               p(annual_returns_text, class = "text-muted"),
-                               tableOutput("annual_returns")
-                               )
+                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                               width = NULL, title = "Optimal portfolio",
+                               p(optimal_portfolio_text, class = "text-muted"),
+                               includeCSS('www/mycss.css'),
+                               uiOutput("max_sharpe_ratio_table")
+                           )
                            )
                        ),
                    # Split column: tables and efficient frontier
                    fluidRow(
                        column(
                            width = 6,
-                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
-                               width = NULL, title = "Optimal portfolio",
-                               p(optimal_portfolio_text, class = "text-muted"),
-                               includeCSS('www/mycss.css'),
-                               uiOutput("max_sharpe_ratio_table")
-                               ),
+                           box(width = NULL, title = "Annual return",
+                               p(annual_returns_text, class = "text-muted"),
+                               tableOutput("annual_returns")
+                           ),
                            box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
                                width = NULL, title = "Minimum Variance Portfolio",
                                uiOutput("min_risk_table")
@@ -162,15 +163,16 @@ dashboardPage(
                               )
                        )
                    )
-                   ),
-                   # Disclaimer
-                   fluidRow(
-                       column(width = 12,
-                              box(width = NULL, title = "Disclaimer",
-                                  p(disclaimer_string, class = "text-muted")
-                                  )
-                              )
-                       )
+                   )
+                   # ,
+                   # # Disclaimer
+                   # fluidRow(
+                   #     column(width = 12,
+                   #            box(width = NULL, title = "Disclaimer",
+                   #                p(disclaimer_string, class = "text-muted")
+                   #                )
+                   #            )
+                   #     )
                    )
             )
         )
