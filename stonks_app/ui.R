@@ -12,6 +12,7 @@ library(shinyjs)
 library(tidyverse)
 library(plotly)
 library(shinydashboard)
+library(tableHTML)
 source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -49,6 +50,8 @@ dashboardPage(
     dashboardSidebar(
         disable = TRUE
     ),
+    
+    
 
     # Tabs
     dashboardBody(
@@ -102,18 +105,22 @@ dashboardPage(
                            intro
                            ),
                        # annual stock returns
-                       box(width = NULL, title = "Annual returns on selected stocks",
+                       box(width = NULL, title = "Annual Returns",
                            tableOutput("annual_returns")
                        ),
                        # split column: tables and efficient frontier
                        fluidRow(
-                           column(
-                               width = 6,
-                               box(width = NULL, title = "Optimal Portfolio",
-                                   tableOutput("max_sharpe_ratio_table")
+                           column(width = 6,
+                                  
+                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                                   width = NULL, title = "Optimal Portfolio",
+                                   includeCSS('www/mycss.css'),
+                                   uiOutput("max_sharpe_ratio_table")
                                    ),
-                               box(width = NULL, title = "Minimum Variance Portfolio",
-                                   tableOutput("min_risk_table")
+                               
+                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                                   width = NULL, title = "Minimum Variance Portfolio",
+                                   uiOutput("min_risk_table")
                                    )
                                ),
                            column(width = 6,

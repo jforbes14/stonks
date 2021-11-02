@@ -11,6 +11,7 @@ library(shiny)
 library(plotly)
 library(scales)
 library(shinybusy)
+library(tableHTML)
 # library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
@@ -20,6 +21,9 @@ source("functions.R")
 # Valid tickers
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
+#manual add during testing
+remove_vect <- c("1AG", "HGM", "AKN", "AHK", "BIN", "APD", "CGM", "AHN", "CDH")
+stocks_vect <- stocks_vect[! stocks_vect %in% remove_vect]
 asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])
 codes_vect <- c(stocks_vect, etf_vect)
@@ -127,20 +131,20 @@ shinyServer(function(input, output, session) {
             
             
             # Table showing top values with maximum sharpe ratio
-            output$max_sharpe_ratio_table <- renderTable({
+            output$max_sharpe_ratio_table <- renderUI({
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(desc(sharpe_ratio)) %>%
-                    head(1)
-            }, digits = 4)
+                    head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
+            })
             
             # Table showing top values with minimum risk
-            output$min_risk_table <- renderTable({
+            output$min_risk_table <- renderUI({
                 req(input$tickersInput)
                 sampled_portfolio_risk_return %>%
                     arrange(risk) %>%
-                    head(1)
-            }, digits = 4)
+                    head(1) %>% tableHTML(round = 2, rownames = FALSE, border = 0)
+            })
             
             # Print out the selected tickers
             output$selected_tickers <- renderPrint({

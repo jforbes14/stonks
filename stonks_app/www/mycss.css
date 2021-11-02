@@ -1,0 +1,29 @@
+td  {
+   text-align: center;
+   font-size: 15px;
+   border:none;
+   background-color: #FFFFFF;
+   border-collapse: collapse;
+   padding: 5px;
+ }
+ 
+th {
+   text-align: center;
+   background-color: #866AEC;
+   font-size: 15px;
+   height: 25px;
+   padding: 5px;
+   color: #FFFFFF;
+ }
+ 
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+
+/* table tbody {
+    display: table;
+    width: 100%;
+} */
