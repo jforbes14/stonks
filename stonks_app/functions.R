@@ -332,7 +332,7 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
   
   # Plot
   p <- plot_data %>%
-    mutate(optimal_portfolio = ifelse(optimal_portfolio, "Optimal", "Not optimal")) %>% 
+    mutate(optimal_portfolio = ifelse(optimal_portfolio, "Optimal", "Alternate")) %>% 
     ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio, label = split)) +
     geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
     # geom_path() +

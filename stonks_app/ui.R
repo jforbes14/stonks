@@ -17,18 +17,26 @@ source("functions.R")
 
 jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
-intro <- HTML("The Stonks App, is a purpose-built web-app created to help you optimise your portfolio allocation. Investing for the first time is tricky, the investment landscape can seem fragmented and answers are often hard to find. We've all been there, your best friends' uncle went to school with someone who was tipped off about a stock that's going to explode. You want to invest before it's too late, but you also know that it's not totally responsible to allocate all your hard earned money into it, so you want to balance it out with some other stable more stable investments. So right now, you've got the assets in mind, but how do you know how much money to allocate to each? Well, fortunately, we want to help you, and we want to start by introducing you to the <a href='https://www.morningstar.com.au/learn/article/investing-bWes-modern-portfolio-theory-expl/204228'>Modern Portfolio Theory</a>. A method of structuring your portfolio by optimising it for the highest return-risk trade off. We offer some recommended reading above to help you understand the nuances of this approach, but we will delve into some of the details below.
+intro <- HTML("
+Stonks is a purpose-built app to help you decide how you should allocate money to stocks you are considering investing in.
 <br>
 <br>
-When we talk about a portfolio, typically we're referring to the combination of two or more assets. In this instance those assets are stocks. Analysing a portfolio is complicated business, and while the profile of stocks may seem homogenous it is important to understand the level of interplay between these assets differ and are key to establshing the optimal structure of the portfolio. This may all seem like a bunch of words on a page, but there are many inputs required into identifying the optimal portfolio in accordance with the Modern Portfolio Theory described above. Don't fret however, we'll do all the hard-work, but understanding the basis of the recommendation is always a good start!
+Once you tell us which ASX stocks you want to invest in, we can tell you how much of each to hold so that you get the greatest return relative to risk - the optimal portfolio.
 <br>
 <br>
-Before the analysis kicks off, a few points of discussion are noted. The first being that this analysis is backwards looking, in that, establishing the optimal portfolio is done by observing the risk, return and covariance of the assets over the last <strong> n </strong> years. What may be the optimal portfolio now might be different to the optimal portfolio (of the same assets) in a year. The second quandary is such that the optimal portfolio presented is identified through a method of sampling. This is different to what is considered an analytical outcome. This is because, in some circumstances, the analytical approach will conclude a portfolio, consisting of negatively weighted assets is the optimal one, and whilst this is possible in practice, through shorting, it is not practical for most investors.
-<br>
-<br>
-Before we go though, we need help with one thing. That's for you to plug in the codes, those three to four letter symbols which represent the company name. Right now, the platform supports only ASX listed companies so ensure that you only jot down companies which are listed right here in Australia. There is also an option to place a maximum threshold on the proportion of an asset within the portfolio. This will limit the amount, as a percentage of the portfolio the asset will take up. For example, if you select 70% as the maximum threshold, no asset in the portfolio will take up more than 70%, even if the optimal portfolio suggests so.
-<br>"
-)
+The dashboard below will display the optimal portfolio along with supporting analysis illustrating the performance and relationships between the stocks.")
+
+annual_returns_text <- HTML("The annual return for your selected stocks.")
+
+optimal_portfolio_text <- HTML("Your optimal portfolio with the percentage allocation for each stock. This is the portfolio that has had the greatest return relative to its risk.")
+
+minimum_variance_portfolio_text <- HTML("The portfolio with the least risk. This is likely to have lower returns.")
+
+candidate_portfolios_text <- HTML("Each point here is an alternative portfolio showing it's risk and return. The optimal portfolio is the shaded point. Hover to see the breakdown of stocks.")
+
+price_plot_text <- HTML("The historical returns for each stock.")
+
+stock_correlations_text <- HTML("The correlations between returns for each pair of stocks.")
 
 disclaimer_string <- "The information on this website is for general information only. It should not be taken as constituting professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
@@ -89,61 +97,82 @@ dashboardPage(
                            selected = 1
                        ),
                        actionButton("go", "Start the Analysis")
-                   ),
-                   box(width = NULL, title = "Disclaimer",
-                       p(
-                           class = "text-muted",
-                           disclaimer_string
-                           )
                    )
+                   # ,
+                   # box(width = NULL, title = "Disclaimer",
+                   #     p(disclaimer_string, class = "text-muted")
+                   # )
             ),
             column(width = 9,
-                   # RHS
+                   # Intro
                    fluidRow(
-                       # intro
-                       box(width = NULL, title = "Intro",
-                           intro
-                           ),
-                       # annual stock returns
-                       box(width = NULL, title = "Annual Returns",
-                           tableOutput("annual_returns")
-                       ),
-                       # split column: tables and efficient frontier
-                       fluidRow(
-                           column(width = 6,
-                                  
-                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
-                                   width = NULL, title = "Optimal Portfolio",
-                                   includeCSS('www/mycss.css'),
-                                   uiOutput("max_sharpe_ratio_table")
-                                   ),
-                               
-                               box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
-                                   width = NULL, title = "Minimum Variance Portfolio",
-                                   uiOutput("min_risk_table")
-                                   )
-                               ),
-                           column(width = 6,
-                                  box(width = NULL, title = "Candidate Portfolios",
-                                      plotlyOutput("portfolio_plot")
-                                      )
-                                  )
-                           ),
-                       
-                       fluidRow(
-                           column(width = 6,
-                                  box(width = NULL, title = "Price Plot",
-                                      plotlyOutput('relative_returns'))
-                           ),
-                           # price plot and correlation matrix
-                            column(width = 6,
-                                  box(width = NULL, title = "Stock Correlations",
-                                      plotOutput("correlation_plot")
-                                  )
+                       column(
+                           width = 12,
+                           img(src = "stonks-banner-thin.png", width = "100%", align = "center")
+                           # box(width = NULL, title = "Intro", p(intro, style = "font-size:16px"))
                            )
+                       ),
+                   # Everything else only appears once go is clicked
+                   conditionalPanel(
+                       condition = "input.go",
+                   # Annual stock returns
+                   fluidRow(
+                       column(
+                           width = 12,
+                           box(width = NULL, title = "Annual return",
+                               p(annual_returns_text, class = "text-muted"),
+                               tableOutput("annual_returns")
+                               )
+                           )
+                       ),
+                   # Split column: tables and efficient frontier
+                   fluidRow(
+                       column(
+                           width = 6,
+                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                               width = NULL, title = "Optimal portfolio",
+                               p(optimal_portfolio_text, class = "text-muted"),
+                               includeCSS('www/mycss.css'),
+                               uiOutput("max_sharpe_ratio_table")
+                               ),
+                           box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                               width = NULL, title = "Minimum Variance Portfolio",
+                               uiOutput("min_risk_table")
+                               )
+                           ),
+                       column(width = 6,
+                              box(width = NULL, title = "Candidate portfolios",
+                                  p(candidate_portfolios_text, class = "text-muted"),
+                                  plotlyOutput("portfolio_plot")
+                                  )
+                              )
+                       ),
+                   # price plot and correlation matrix
+                   fluidRow(
+                       column(width = 6,
+                              box(width = NULL, title = "Price plot",
+                                  p(price_plot_text, class = "text-muted"),
+                                  plotlyOutput('relative_returns')
+                              )
+                       ),
+                       column(width = 6,
+                              box(width = NULL, title = "Stock correlations",
+                                  p(stock_correlations_text, class = "text-muted"),
+                                  plotOutput("correlation_plot")
+                              )
+                       )
+                   )
+                   ),
+                   # Disclaimer
+                   fluidRow(
+                       column(width = 12,
+                              box(width = NULL, title = "Disclaimer",
+                                  p(disclaimer_string, class = "text-muted")
+                                  )
+                              )
                        )
                    )
             )
         )
     )
-)
+
