@@ -22,7 +22,7 @@ source("functions.R")
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
 #manual add during testing
-remove_vect <- c("1AG", "HGM", "AKN", "AHK", "BIN", "APD", "CGM", "AHN", "CDH", "ALT")
+remove_vect <- c("1AG", "HGM", "AKN", "AHK", "BIN", "APD", "CGM", "AHN", "CDH", "ALT", "CYQDF", "EUR")
 stocks_vect <- stocks_vect[! stocks_vect %in% remove_vect]
 asx_etf <- read_csv('data/ETF_data_cleaned.csv')
 etf_vect <- as.vector(asx_etf[[1]])

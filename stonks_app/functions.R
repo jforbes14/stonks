@@ -416,7 +416,7 @@ daily_returns_with_date <- function(prices_df = df) {
   daily_returns <- prices_df %>%
     group_by(ticker) %>% 
     arrange(date) %>% 
-    mutate(ret = (((price / lag(price)) - 1)) * 100)
+    mutate(ret = (((price / lag(price)))))
   
   daily_returns$ticker <- gsub(".AX", "", as.character(daily_returns$ticker))
   
@@ -424,23 +424,24 @@ daily_returns_with_date <- function(prices_df = df) {
   
   
   daily_returns <- daily_returns %>%
-    group_by(ticker) %>%
+    rename(Ticker = ticker) %>%
+    group_by(Ticker) %>%
     arrange(date) %>% 
-    mutate(cumret = cumsum(ret) )
+    mutate(cumret = ((cumprod(ret) - 1) * 100))
   
   
   daily_data <- daily_returns %>% select(-c("price"))
   xlim1 <- min(daily_data$date)
   xlim2 <- max(daily_data$date)
   
-  p <- daily_data %>% ggplot(aes(x = date, y = cumret, color = ticker, group = ticker, 
-                                 text = paste0( 'Ticker: ', ticker,
+  p <- daily_data %>% ggplot(aes(x = date, y = cumret, color = Ticker, group = Ticker, 
+                                 text = paste0( 'Ticker: ', Ticker,
                                                '<br>Date: ', as.Date(date),
                                                '<br>Cumulative Return: ', round(cumret,2), '%'))) + geom_line() +
     scale_y_continuous(labels = function(x) paste0(x, "%")) +
     coord_x_date(xlim = c(xlim1, xlim2)) +
     labs(title = "Cumulative Returns", y = "Return", x = "Date") +
-    scale_color_brewer(palette = "Paired") + theme(legend.key=element_blank()) +
+    scale_color_brewer(palette = "PuOr") + theme(legend.key=element_blank()) +
     theme_bw()
   
   r_plotly <- ggplotly(p, tooltip = c("text")) %>%
