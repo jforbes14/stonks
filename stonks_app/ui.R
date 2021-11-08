@@ -73,7 +73,7 @@ dashboardPage(
                        # Selectize tickers
                        selectizeInput(
                            "tickersInput",
-                           "Enter tickers for up to 10 stocks (at least 2)",
+                           "Enter up to 10 stock tickers with a minimum of two",
                            choices = NULL,
                            multiple = TRUE,
                            options = list(create = TRUE, maxItems = 10)
@@ -81,7 +81,7 @@ dashboardPage(
                        # Maximum percentage for any one stock
                        sliderInput(
                            "MaxAllo",
-                           "Enter a maximum percentage for any one stock",
+                           "Enter a maximum threshold for any one stock",
                            min = 0,
                            max = 100,
                            value = 100,
@@ -123,7 +123,7 @@ dashboardPage(
                        column(
                            width = 12,
                            box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
-                               width = NULL, title = "Optimal portfolio",
+                               width = NULL, title = "Optimal Portfolio",
                                p(optimal_portfolio_text, class = "text-muted"),
                                includeCSS('www/mycss.css'),
                                uiOutput("max_sharpe_ratio_table")
@@ -134,13 +134,13 @@ dashboardPage(
                    fluidRow(
                        column(
                            width = 6,
-                           box(width = NULL, title = "Annual return",
+                           box(width = NULL, title = "Annual Return",
                                p(annual_returns_text, class = "text-muted"),
-                               tableOutput("annual_returns")
+                               uiOutput("annual_returns")
                            ),
-                           box(width = NULL, title = "Annual risk",
+                           box(width = NULL, title = "Annual Risk",
                                p(annual_risk_text, class = "text-muted"),
-                               tableOutput("annual_risk")
+                               uiOutput("annual_risk")
                            ),
                            box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
                                width = NULL, title = "Minimum Variance Portfolio",
@@ -148,7 +148,7 @@ dashboardPage(
                                )
                            ),
                        column(width = 6,
-                              box(width = NULL, title = "Candidate portfolios",
+                              box(width = NULL, title = "Candidate Portfolios",
                                   p(candidate_portfolios_text, class = "text-muted"),
                                   plotlyOutput("portfolio_plot")
                                   )
@@ -157,13 +157,13 @@ dashboardPage(
                    # price plot and correlation matrix
                    fluidRow(
                        column(width = 6,
-                              box(width = NULL, title = "Price plot",
+                              box(width = NULL, title = "Price Plot",
                                   p(price_plot_text, class = "text-muted"),
                                   plotlyOutput('relative_returns')
                               )
                        ),
                        column(width = 6,
-                              box(width = NULL, title = "Stock correlations",
+                              box(width = NULL, title = "Stock Correlations",
                                   p(stock_correlations_text, class = "text-muted"),
                                   plotOutput("correlation_plot")
                               )
