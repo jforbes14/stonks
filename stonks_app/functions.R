@@ -348,7 +348,11 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
   p_plotly <- ggplotly(p, tooltip = c("split")) %>% 
     layout(
       xaxis = list(fixedrange=TRUE),
-      yaxis = list(fixedrange=TRUE)
+      yaxis = list(fixedrange=TRUE),
+      legend = list(orientation = "h",
+                    xanchor = "left",
+                    x = 0,
+                    y = -0.25)
     )
   return(p_plotly)
 }
@@ -447,7 +451,11 @@ daily_returns_with_date <- function(prices_df = df) {
   r_plotly <- ggplotly(p, tooltip = c("text")) %>%
     layout(
       yaxis = list(fixedrange=TRUE),
-      xaxis = list(fixedrange=TRUE)
-    )
+      xaxis = list(fixedrange=TRUE),
+      legend = list(orientation = "h",
+                    xanchor = "left",
+                    x = 0,
+                    y = -0.25)
+      )
   return(r_plotly)
 }
