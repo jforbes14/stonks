@@ -11,9 +11,14 @@ disclaimer_string <- "The information on this website is for general information
 
 bootstrapPage(
     theme  = bs_theme(version = 5),
+    h2("", class="d-block d-md-none"),
     div(class="container-fluid",
-        h2("Web", class="d-none d-md-block"),
-        h2("Mobile", class="d-block d-md-none"),
+        img(src="mobile-banner.png", 
+            class="d-block d-md-none",
+            alt="Responsive image",
+            height="30%", width="100%"),
+        h2("", class="d-none d-md-block"),
+        h2("", class="d-block d-md-none"),
         div(class="row",
             div(class="col-md-3",
                 div(class="well"
@@ -47,11 +52,16 @@ bootstrapPage(
                     actionButton("go", "Start the Analysis")
                 )
                 # disclaimer
-            )
-            ,
+            ),
             div(class="col-md-9",
-                img(src = "stonks-banner-thin.png", width = "100%", align = "center")
-                )
+                img(src = "stonks-banner-thin.png", class="d-none d-md-block", alt="Responsive image", 
+                    width = "100%", align = "right")
+                ),
+            conditionalPanel(
+                condition = "input.go",
+                
+            )    
+                
         )
     )
 )
