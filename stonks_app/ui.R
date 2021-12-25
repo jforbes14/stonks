@@ -73,14 +73,16 @@ bootstrapPage(
             ),
             div(class="col-md-9",
                 img(src = "stonks-banner-thin.png", class="d-none d-md-block", alt="Responsive image", 
-                    width = "100%", align = "right")
+                    height = "auto", width = "100%", align = "right")
                 ),
+            br(),
+        
             conditionalPanel(
                 condition = "input.go",
                 
                fluidRow(
                    column(
-                       width = 12,
+                       width = 6,
                     box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
                         width = NULL, title = "Optimal Portfolio",
                         p(optimal_portfolio_text, class = "text-muted"),
@@ -93,12 +95,14 @@ bootstrapPage(
             
             fluidRow(
                 column(
-                    width = 6,
-                    box(width = NULL, title = "Annual Return",
+                    width = 12,
+                    box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                        width = NULL, title = "Annual Return",
                         p(annual_returns_text, class = "text-muted"),
                         uiOutput("annual_returns")
                     ),
-                    box(width = NULL, title = "Annual Risk",
+                    box(style = "overflow-x:scroll; max-height: 300px; position:relative; align: centre",
+                        width = NULL, title = "Annual Risk",
                         p(annual_risk_text, class = "text-muted"),
                         uiOutput("annual_risk")
                     ),
