@@ -12,13 +12,13 @@ library(jsonlite)
 source("functions.R")
 
 
-annual_returns_text <- HTML("The annual return for each of your selected stocks.")
+annual_returns_text <- HTML("The average annual return for each of your selected stocks. Returns can be compared across assets, but should be considered with reference to their risk.")
 
-annual_risk_text <- HTML("The annual risk (variance) for each of your selected stocks.")
+annual_risk_text <- HTML("The average annual risk for each of your selected stocks. In this instance, risk is defined as the variance of daily returns.")
 
-optimal_portfolio_text <- HTML("Your optimal portfolio with the percentage allocation for each stock. This is the portfolio that has had the greatest return relative to its risk.")
+optimal_portfolio_text <- HTML("Your optimal portfolio! This portfolio will have the highest level of return for its level of risk. Based on historical data, the following breakdown is the optimal allocation of your assets.")
 
-minimum_variance_portfolio_text <- HTML("The portfolio with the least risk. This is likely to have lower returns.")
+minimum_variance_portfolio_text <- HTML("This is an alternate view of your portfolio. This portfolio is the one with the lowest level of risk, and can be considered if you are risk averse.")
 
 candidate_portfolios_text <- HTML("Each point here is an alternative portfolio showing it's risk and return. The optimal portfolio is the shaded point. Hover to see the breakdown of stocks.")
 
@@ -164,9 +164,9 @@ fluidPage(
                                 p(stock_correlations_text, class = "text-muted"),
                                 plotOutput("correlation_plot"))
                                 
-                            ),
+                          ),
                       
-                          br(),
+                          br()
                           
                           # div(class =  "col-12 col-md-12",
                           #     htmlTemplate("www/accordion.html")),
