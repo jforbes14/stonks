@@ -1,0 +1,43 @@
+<html>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+<div class="w3-container">
+
+<h2>Alternate Portfolios and Information</h2>
+<p>Contained below is an analysis of the portfolio, detailing the annual returns of each asset and their risk. Risk is measured as the variance of returns, and can be viewed in a relative sense. The minimum variance portfolio, is a theoretical portfolio containing theoretical lowest level of risk.</p>
+
+<button onclick="myFunction('Demo1')" class="w3-button w3-block w3-black w3-left-align">Annual Return</button>
+<div id="Demo1" class="w3-hide w3-container">
+    <p>Test Text 1</p>
+</div>
+
+<button onclick="myFunction('Demo2')" class="w3-button w3-block w3-black w3-left-align">Annual Risk</button>
+<div id="Demo2" class="w3-hide w3-container">
+    <p>Test Text 2</p>
+</div>
+
+<button onclick="myFunction('Demo3')" class="w3-button w3-block w3-black w3-left-align">Minimum Variance Portfolio</button>
+<div id="Demo3" class="w3-hide w3-container">
+    <p>Test Text 3</p>
+</div>
+
+</div>
+<script>
+function myFunction(id) {
+  var x = document.getElementById(id);
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+    x.previousElementSibling.className = 
+    x.previousElementSibling.className.replace("w3-black", "w3-gray");
+  } else { 
+    x.className = x.className.replace(" w3-show", "");
+    x.previousElementSibling.className = 
+    x.previousElementSibling.className.replace("w3-gray", "w3-black");
+  }
+}
+</script>
+
+</body>
+</html>
