@@ -28,13 +28,22 @@ stock_correlations_text <- HTML("The correlations between returns for each pair 
 
 disclaimer_string <- "The information on this website is for general information only and should not be taken as financial advice nor any professional advice from the website owner. We are not liable for any loss caused from information provided directly or indirectly. The tools on this website are illustrative and should not be taken as a substitute for professional advice. All reasonable care has been taken in development; however, we provide absolutely no warranty."
 
-fluidPage(
+navbarPage(
+  "Stonks",
+  fluid=TRUE,
   # tags$head(tags$script(src="www/hello.js")),
   # tags$head(tags$link(rel="stylesheet", 
   #                     type="text/css",
   #                     href="www/mycss.css")),
-  
-              theme  = bs_theme(version = 5),
+  theme  = bs_theme(
+    version = 5,
+    bootswatch = "simplex",
+    # bg = '#e0e0e0',
+    # fg = 'black',
+    primary = "purple", 
+    base_font = font_google("Quicksand")
+    ),
+  tabPanel("Portfolio Optimisation",
               h2("", class="d-block d-md-none"),
               div(class="container-fluid",
                   img(src="mobile-banner.png", 
@@ -186,4 +195,7 @@ fluidPage(
         
         htmlTemplate("www/linkedin.html"),
   
-    )
+    ),
+  
+  tabPanel("Contact")
+)
