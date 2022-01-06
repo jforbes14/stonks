@@ -61,10 +61,11 @@ dashboardPage(
         disable = TRUE
     ),
     
-    
 
     # Tabs
     dashboardBody(
+      
+      useShinyjs(),
         fluidRow(
             column(width = 3,
                    box(
