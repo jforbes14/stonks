@@ -12,7 +12,7 @@ library(plotly)
 library(scales)
 library(shinybusy)
 library(tableHTML)
-# library(shinyjs)
+library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
@@ -234,4 +234,14 @@ shinyServer(function(input, output, session) {
             remove_modal_gif()
         }
     )
+    
+    observe({
+        if(length(input$tickersInput) < 2){
+            disable("go")
+        }
+        else{
+            enable("go")
+        }
+    })
+    
 })
