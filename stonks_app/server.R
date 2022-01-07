@@ -12,7 +12,7 @@ library(plotly)
 library(scales)
 library(shinybusy)
 library(tableHTML)
-# library(shinyjs)
+library(shinyjs)
 # 
 # jsResetCode <- "shinyjs.reset = function() {history.go(0)}" # Define the js method that resets the page
 
@@ -225,11 +225,11 @@ shinyServer(function(input, output, session) {
             
             output$downloadData <- downloadHandler(
                 filename = function() {
-                    paste("stockprices", ".csv", sep = "")
+                    paste("portfolioSplits", ".csv", sep = "")
                 },
                 
                 content = function(file) {
-                    write.csv(df, file, row.names = TRUE)
+                    write.csv(sampled_portfolio_risk_return, file, row.names = TRUE)
                 }
             )
 
@@ -246,4 +246,14 @@ shinyServer(function(input, output, session) {
             
         }
     )
+    
+    observe({
+        if(length(input$tickersInput) < 2){
+            disable("go")
+        }
+        else{
+            enable("go")
+        }
+    })
+    
 })
