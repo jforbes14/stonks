@@ -338,8 +338,8 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
     ggplot(aes(x=risk_increments, y=return, col=sharpe_ratio, label = split)) +
     geom_point(size=size, alpha=alpha, aes(shape=optimal_portfolio)) +
     # geom_path() +
-    scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe ratio') +
-    scale_shape_manual(values = c(1, 19), name = 'Optimal portfolio') +
+    scale_color_gradient(low = 'orange', high = 'purple', name = 'Sharpe Ratio') +
+    scale_shape_manual(values = c(1, 50), name = 'Optimal portfolio') +
     xlab('Risk') +
     ylab('Return') +
     guides(shape = "none")
@@ -350,7 +350,7 @@ plot_efficient_frontier <- function(portfolios_df, size, alpha){
       xaxis = list(fixedrange=TRUE),
       yaxis = list(fixedrange=TRUE),
       legend = list(orientation = "h",
-                    xanchor = "left",
+                    xanchor = "center",
                     x = 0,
                     y = -0.25)
     )
