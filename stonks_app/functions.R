@@ -14,8 +14,6 @@ options("getSymbols.warning4.0"=FALSE)
 hello <- function() {
   return("hello world")
 }
-
-
 asx_stocks <- read_csv('data/asx_cons_cleaned.csv')
 stocks_vect <- as.vector(asx_stocks[[1]])
 #manual add during testing
@@ -259,7 +257,7 @@ compute_risk <- function(cov_returns, wts) {
 # Risk value for the given portfolio split
 portfolios_summary_df <- function(splits, returns, risk) {
   
-  a <- data_frame(
+  a <- tibble(
     return = returns %>% as.vector(),
     risk = risk %>% as.vector()
   ) %>%

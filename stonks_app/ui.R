@@ -14,9 +14,9 @@ source("functions.R")
 
 annual_returns_text <- HTML("The average annual return for each of your selected stocks. Returns can be compared across assets, but should be considered with reference to their risk.")
 
-annual_risk_text <- HTML("The average annual risk for each of your selected stocks. In this instance, risk is defined as the variance of daily returns.")
+annual_risk_text <- HTML("The average annual risk for each of your selected stocks. Risk being efined as the variance of daily returns.")
 
-optimal_portfolio_text <- HTML("Your optimal portfolio! This portfolio will have the highest level of return for its level of risk. Based on historical data, the following breakdown is the optimal allocation of your assets.")
+optimal_portfolio_text <- HTML("Your optimal portfolio! This portfolio will have the greatest relative return for its corresponding level risk. Based on historical data, the following allocation is recommended.")
 
 minimum_variance_portfolio_text <- HTML("This is an alternate view of your portfolio. This portfolio is the one with the lowest level of risk, and can be considered if you are risk averse.")
 
@@ -39,7 +39,7 @@ fluidPage(
   theme  = bs_theme(version = 5),
   h2("", class="d-block d-md-none"),
   div(class="container-fluid",
-      img(src="mobile-banner.png", 
+      img(src="mob_banner.png", 
           class="d-block d-md-none",
           alt="Responsive image",
           height="30%", width="100%"),
@@ -67,11 +67,6 @@ fluidPage(
                     options = list(create = TRUE, maxItems = 10)
                   ),
                   
-                  downloadButton("downloadData", "Download"
-                  ),
-                  
-                  br(),
-                  
                   # Specify number of samples for sampling approach
                   selectInput(
                     "n_samples",
@@ -90,7 +85,7 @@ fluidPage(
           ),
           
           div(class="col-md-9",
-              img(src = "stonks-banner-thin.png", class="d-none d-md-block", alt="Responsive image", 
+              img(src = "web_banner.png", class="d-none d-md-block", alt="Responsive image", 
                   height = "auto", width = "100%", align = "right")
           ),
           
@@ -150,7 +145,9 @@ fluidPage(
                 width = 6,
                 box(width = NULL, title = "Candidate Portfolios",
                     p(candidate_portfolios_text, class = "text-muted"),
-                    plotlyOutput("portfolio_plot"))
+                    plotlyOutput("portfolio_plot"),
+                    downloadButton("downloadData", "Download Data"
+                    ),)
                 
               ),
               
